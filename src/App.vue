@@ -227,7 +227,7 @@ function updateMiniCart(amount) {
   console.log(amount)
   let minicart = document.getElementById("synergy-mini-cart-label");
   if (minicart) {
-    minicart.innerText = amount
+    minicart.innerText = "£" + parseFloat(amount).toFixed(2);
   }
 }
 </script>
