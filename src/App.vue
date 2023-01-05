@@ -60,7 +60,7 @@ function bindSelectorClick() {
       });
     }
 
-    let showDonationButton = document.querySelector("#btn-show-donation-modal");
+    let showDonationButton = document.querySelector(".synergy-btn-show-donation-modal");
     if (showDonationButton != null) {
       showDonationButton.addEventListener("click", () => {
         openDonationModal();
@@ -224,7 +224,6 @@ function toggleCustomProject(type, selected) {
 }
 
 function updateMiniCart(amount) {
-  console.log(amount)
   let minicart = document.getElementById("synergy-mini-cart-label");
   if (minicart) {
     minicart.innerText = "£" + parseFloat(amount).toFixed(2);
