@@ -226,8 +226,9 @@ function toggleCustomProject(type, selected) {
 function updateMiniCart(amount) {
   console.log(amount)
   let minicart = document.getElementById("synergy-mini-cart-label");
-  // console.log(minicart)
-  minicart.innerText = amount
+  if (minicart) {
+    minicart.innerText = amount
+  }
 }
 </script>
   
