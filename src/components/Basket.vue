@@ -21,7 +21,7 @@
                 <template v-for="(donation,index) in donations"  :key="'donation_' + index">
                   <li 
                     v-if="donation.project"
-                    class="flex py-4 px-2 border-2 border-green mb-2 bg-white">
+                    class="flex py-4 px-2 !border-2 !border-green mb-2 bg-white">
                     <div class="flex flex-1 flex-col">
                       <div>
                         <div
@@ -66,7 +66,7 @@
         </div>
         <div class="mb-4 px-4 sm:px-6">
           <ul class="flex gap-2">
-            <li class="relative w-1/2 flex flex-col justify-center items-center border-2 border-green p-4 bg-white">
+            <li class="relative w-1/2 flex flex-col justify-center items-center !border-2 !border-green p-4 bg-white">
               <h2 class="font-bold text-lg text-green mb-1">Paper copy of reciept</h2>
               <input type="hidden" :value="paper_copy_amount">
               <p class="font-bold text-lg mb-1">£{{ paper_copy_amount }}</p>
@@ -89,7 +89,7 @@
               <div class="absolute hidden w-5 h-5 peer-checked:block top-5 right-3"></div>
             </li>
   
-            <li class="relative w-1/2 flex flex-col justify-center items-center border-2 border-green p-4 bg-white">
+            <li class="relative w-1/2 flex flex-col justify-center items-center !border-2 !border-green p-4 bg-white">
               <h2 class="font-bold text-lg text-green mb-1">Admin Fee Cover</h2>
               <input type="hidden" :value="admin_fee_amount" >
               <p class="font-bold text-lg mb-1">£{{ admin_fee_amount }}</p>
