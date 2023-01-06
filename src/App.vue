@@ -235,7 +235,7 @@ function updateMiniCart(amount) {
   
 <template>
   <div>
-    <VueSidePanel v-model="state.isCartOpened" lock-scroll class="!md:w-1/3 !w-full bg-gray-100">
+    <VueSidePanel v-model="state.isCartOpened" lock-scroll class="!md:w-1/3 w-full bg-gray-100">
       <Basket :donations="state.donations" 
             :form="state.form" 
             :stripePublicKey="state.stripePublicKey"
@@ -244,7 +244,7 @@ function updateMiniCart(amount) {
             @totalAmount="updateMiniCart"
             @removeItem="removeItem"/>
     </VueSidePanel>
-    <VueSidePanel v-model="state.isAddDonationOpened" lock-scroll class="!md:w-1/3 !w-full bg-gray-100">
+    <VueSidePanel v-model="state.isAddDonationOpened" lock-scroll class="!md:w-1/3 w-full bg-gray-100">
       <DonationModal 
       ref="donationComponentRef"
       @added="donationAdded"/>
