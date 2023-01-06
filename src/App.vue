@@ -234,7 +234,7 @@ function updateMiniCart(amount) {
 </script>
   
 <template>
-  <div>
+  <div id="synergy-donation-tailwind">
     <VueSidePanel v-model="state.isCartOpened" lock-scroll class="md:w-1/3 w-full bg-gray-100">
       <Basket :donations="state.donations" 
             :form="state.form" 

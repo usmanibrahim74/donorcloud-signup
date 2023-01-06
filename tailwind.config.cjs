@@ -1,6 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
-  important: true,
+  important: "#synergy-donation-tailwind",
   // prefix: 'tw-',
   content: [
     "./index.html",
