@@ -22,7 +22,7 @@ let state = reactive({
   projects: [],
   locations: [],
   donationTypes: [],
-  donations: [],
+  donations: JSON.parse(localStorage.getItem('synergi-zuf-donations')) ?? [],
   countries,
   totalAmount: 0,
   current_donation: { ...current_donation },
@@ -37,7 +37,7 @@ const donationComponentRef = ref(null)
 onMounted(() => {
   // getPublicKey();
   // getProjects();
-  getAdminProjects()
+  // getAdminProjects()
   bindSelectorClick();
   bindProjectSelectorClick();
 });
@@ -173,6 +173,7 @@ function editItem(index) {
 // }
 
 function initAgain() {
+  localStorage.removeItem('synergi-zuf-donations')
   state.donations = [];
 }
 
@@ -205,6 +206,7 @@ function assets(asset) {
 function donationAdded(donation) {
   if (state.selectedItem == null) {
     state.donations = [...state.donations, { ...donation }];
+    localStorage.setItem('synergi-zuf-donations',JSON.stringify(state.donations))
   } else {
     state.donations[state.selectedItem] = state.current_donation;
     state.selectedItem = null;
