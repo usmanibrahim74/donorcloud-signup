@@ -69,6 +69,13 @@ export default {
       projects.value = data.data
     }
 
+    const gatewayKey = ref(null);
+    const fetchGatewayKey = async () => {
+      let gateWay = 'stripe';
+      const { data } = await Api.fetchGatewayKey(gateWay)
+      gatewayKey.value = data.data.public_key
+    }
+
     const add = () =>{
       editIndex.value = null;
       donationForm.value = {
@@ -79,12 +86,14 @@ export default {
 
     onMounted(()=>{
       fetchProjects();
+      fetchGatewayKey();
     })
     return {
       donationForm,
       open,
       step,
       state,
+      gatewayKey,
       stepOneCompleted,
       stepTwoCompleted,
       edit,
@@ -120,7 +129,7 @@ export default {
           <DonationStep v-model="donationForm" :projects="projects" v-if="step == 1" @forward.once="stepOneCompleted" />
           <BasketStep v-model="state" v-if="step == 2" @forward="stepTwoCompleted" @edit="edit" @add-another="add" />
           <DetailsStep v-model="state.donor"  v-if="step == 3"  @backward="step=2" @forward="step=4" />
-          <Stripe stripePublicKey="pk_test_51MQl7zI9pyNR1u11TRazXFYgaFraDrH1UcJ9ED350AZR6tCfx7w5UBZ1fgUrhGkKRGaBQKeM0raBgP9NhrCAZZzx00Slgle001" v-if="step == 4" />
+          <Stripe :stripePublicKey="gatewayKey" v-if="step == 4" />
           <ThankyouStep v-if="step == 5" />
         </div>
       </div>

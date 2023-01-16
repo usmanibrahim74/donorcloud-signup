@@ -2,44 +2,40 @@
   <div>
     <form>
       <div>
-        <p class="stripe__error" v-if="stripeError">
+        <p class="stripe__error mb-3 text-red-400 text-xs m-0" v-if="stripeError">
           {{ stripeError }}
         </p>
       </div>
-
-      <div class="stripe">
-        <label for="Card Number" class="stripe__label"> Card Number </label>
+      <div class="stripe mb-3">
         <div>
-          <div id="card-number" class="block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none"></div>
-          <span class="stripe__error" v-if="cardNumberError">
+          <div id="card-number" class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"></div>
+          <span class="stripe__error ml-5 text-red-400 text-xs" v-if="cardNumberError">
             {{ cardNumberError }}
           </span>
         </div>
       </div>
 
       <div class="stripe__box">
-        <div class="stripe__box__cvv">
-          <label for="Card CVC" class="stripe__label"> Card CVC </label>
+        <div class="stripe__box__cvv mb-3">
           <div>
-            <div id="card-cvc" class="block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none"></div>
-            <span class="stripe__error" v-if="cardCvcError">
+            <div id="card-cvc" class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"></div>
+            <span class="stripe__error ml-5 text-red-400 text-xs" v-if="cardCvcError">
               {{ cardCvcError }}
             </span>
           </div>
         </div>
         <div class="stripe__box__expiry">
-          <label for="Expiry Month" class="stripe__label"> Expiry </label>
           <div>
-            <div id="card-expiry" class="block w-full px-3 py-1.5 text-base font-normal text-gray-700 bg-white bg-clip-padding border border-solid border-gray-300 rounded transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none"></div>
-            <span class="stripe__error" v-if="cardExpiryError">
+            <div id="card-expiry" class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"></div>
+            <span class="stripe__error ml-5 text-red-400 text-xs" v-if="cardExpiryError">
               {{ cardExpiryError }}
             </span>
           </div>
         </div>
       </div>
 
-      <div class="my-6 flex justify-between">
-        <button type="button" @click="moveBack()" class="px-6 pt-2.5 pb-2 bg-gray-600 text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center">
+      <div class="flex items-center justify-center mt-8 gap-4">
+        <button type="button" @click="moveBack()" class="border-primary border-2 text-sm font-medium rounded-3xl py-3.5 px-3 md:px-6 bg-primary-100 text-primary transition duration-300 ease-in-out flex align-center items-center">
           <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 mr-3">
             <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
           </svg>
@@ -47,7 +43,7 @@
         </button>
         <button 
           @click.prevent="submitFormToCreateToken()"
-          type="button" class="px-6 pt-2.5 pb-2 bg-red text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center">
+          type="button" class="border-primary border-2 text-sm font-medium rounded-3xl py-3.5 px-3 md:px-6 bg-primary text-primary-50 transition duration-300 ease-in-out flex align-center items-center">
           Donate
           <svg v-if="!loading" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 ml-3">
             <path stroke-linecap="round" stroke-linejoin="round" d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />

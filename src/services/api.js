@@ -21,7 +21,7 @@ if (document.getElementById("donationModal")) {
 // });
 
 const url = (api) => {
-  return import.meta.env.VITE_APP_URL+"/api/modal/" + api;
+  return "http://127.0.0.1:8000/api/modal/" + api;
 };
 export default {
   saveDonation(payload) {
