@@ -132,7 +132,6 @@ export default {
     const message = props.errorMessage.replace(":field", props.field).trim();
     return {
       model,
-      options: props.options,
       labelText,
       message,
     };

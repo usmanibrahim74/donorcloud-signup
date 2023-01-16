@@ -48,4 +48,7 @@ export default {
   fetchAdminProjects() {
     return axios.get(url(`admin-projects`));
   },
+  fetchAllProjects() {
+    return axios.get(url("projects"));
+  },
 };

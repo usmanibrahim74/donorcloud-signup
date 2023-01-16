@@ -63,6 +63,12 @@ export default {
       step.value = 1;
     }
 
+    const projects = ref([]);
+    const fetchProjects = async () => {
+      const { data } = await Api.fetchAllProjects()
+      projects.value = data.data
+    }
+
     const add = () =>{
       editIndex.value = null;
       donationForm.value = {
@@ -70,6 +76,10 @@ export default {
       }
       step.value = 1;
     }
+
+    onMounted(()=>{
+      fetchProjects();
+    })
     return {
       donationForm,
       open,
@@ -78,7 +88,8 @@ export default {
       stepOneCompleted,
       stepTwoCompleted,
       edit,
-      add
+      add,
+      projects
     };
   },
 };
@@ -106,10 +117,10 @@ export default {
           />
         </div>
         <div class="max-w-[750px] mx-auto py-5 mb-10">
-          <DonationStep v-model="donationForm" v-if="step == 1" @forward.once="stepOneCompleted" />
+          <DonationStep v-model="donationForm" :projects="projects" v-if="step == 1" @forward.once="stepOneCompleted" />
           <BasketStep v-model="state" v-if="step == 2" @forward="stepTwoCompleted" @edit="edit" @add-another="add" />
           <DetailsStep v-model="state.donor"  v-if="step == 3"  @backward="step=2" @forward="step=4" />
-          <Stripe stripePublicKey="pk_test_51KEZblITpRY73U53TSXaNrW8Uj4zeIFKDFogBqAHeBFrqmtPgflNm5PY0gdbRStebJZnTvqe5GJhaZciHti7t20M00BMb5ZjIB" v-if="step == 4" />
+          <Stripe stripePublicKey="pk_test_51MQl7zI9pyNR1u11TRazXFYgaFraDrH1UcJ9ED350AZR6tCfx7w5UBZ1fgUrhGkKRGaBQKeM0raBgP9NhrCAZZzx00Slgle001" v-if="step == 4" />
           <ThankyouStep v-if="step == 5" />
         </div>
       </div>

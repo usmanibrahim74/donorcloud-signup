@@ -16,7 +16,7 @@
     </div>
     <SelectBox
       class="z-20"
-      label="text"
+      label="title"
       track-by="id"
       v-model="project_id"
       :options="projects"
@@ -65,19 +65,25 @@ export default {
       type: Object,
       required: true,
     },
+    projects: {
+      type: Array,
+      required: true,
+    },
   },
   setup(props, { emit }) {
     const model = computed({
       get: () => props.modelValue,
       set: (value) => emit("update:modelValue", value),
     });
+
     const project_id = computed({
       get: () => model.value.project_id,
       set: (value) => {
-        model.value.project = projects.find((p) => p.id == value);
+        model.value.project = props.projects.find((p) => p.id == value);
         model.value.project_id = value;
       },
     });
+
     const donation_type_id = computed({
       get: () => model.value.donation_type_id,
       set: (value) => {
@@ -85,12 +91,6 @@ export default {
         model.value.donation_type_id = value;
       },
     });
-
-    const projects = [
-      { text: "Project 1", id: 1 },
-      { text: "Project 2", id: 2 },
-    ];
-
     const donation_types = [
       { text: "Type 1", id: 1 },
       { text: "Type 2", id: 2 },
@@ -147,7 +147,6 @@ export default {
       project_id,
       donation_type_id,
       model,
-      projects,
       donation_types,
       variations,
       errors: errors,
