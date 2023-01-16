@@ -1,253 +1,126 @@
-<script setup>
-import { reactive, onMounted, ref, computed } from "vue";
+<script>
+import { reactive, ref, computed } from "@vue/reactivity";
+import { onMounted } from "vue";
 import Api from "./services/api";
 import countries from "./data/countries.json";
-import Basket from "./components/Basket.vue";
-import DonationModal from "./components/DonationModal.vue";
-import Footer from "./components/Footer.vue";
+import { donation, donor } from "./data/resets";
+import { VueFinalModal } from "vue-final-modal";
+import DonationStep from "./steps/Donation.vue";
+import BasketStep from "./steps/Basket.vue";
+import DetailsStep from "./steps/Details.vue";
 import Stripe from "./components/Stripe.vue";
-import IconDelete from "./components/icons/IconDelete.vue";
-import IconEdit from "./components/icons/IconEdit.vue";
-import IconCheck from "./components/icons/IconCheck.vue";
-import Paypal from "./components/Paypal.vue";
-
-import { current_donation, form } from "./data/resets";
-let state = reactive({
-  showModal: false,
-  isCartOpened: false,
-  isAddDonationOpened: false,
-  step: 1,
-  selectedItem: null,
-  errors: {},
-  projects: [],
-  locations: [],
-  donationTypes: [],
-  donations: JSON.parse(localStorage.getItem('synergi-zuf-donations')) ?? [],
-  countries,
-  totalAmount: 0,
-  current_donation: { ...current_donation },
-  form: { ...form },
-  stripePublicKey: 'pk_test_51KEZblITpRY73U53TSXaNrW8Uj4zeIFKDFogBqAHeBFrqmtPgflNm5PY0gdbRStebJZnTvqe5GJhaZciHti7t20M00BMb5ZjIB',
-  totalDonation: 0, 
-  donationTotal:0,
-  adminProjects:[],
-  quickDonation:{}
-});
-const donationComponentRef = ref(null)
-onMounted(() => {
-  // getPublicKey();
-  // getProjects();
-  // getAdminProjects()
-  bindSelectorClick();
-  bindProjectSelectorClick();
-});
-
-async function getAdminProjects() {
-  let { data } = await Api.fetchAdminProjects();
-  state.adminProjects = data
-}
+import ThankyouStep from "./steps/Thankyou.vue";
+import ProgressStep from "./components/ProgressStep.vue";
+import Header from "./components/Header.vue";
+import Footer from "./components/Footer.vue";
+import Title from "./components/Title.vue";
+import Total from "./components/Total.vue";
 
 
-function bindSelectorClick() {
-  if (document.getElementById("donationModal")) {
-    let selector = document
-      .getElementById("donationModal")
-      .getAttribute("data-selector");
-    let shoBasketButton = document.querySelector("#btn-show-basket");
-    if (shoBasketButton != null) {
-      shoBasketButton.addEventListener("click", () => {
-        openModel();
-      });
+export default {
+  name: "DonorCloud",
+  components: {
+    VueFinalModal,
+    DonationStep,
+    BasketStep,
+    DetailsStep,
+    Stripe,
+    ThankyouStep,
+    ProgressStep,
+    Header,
+    Footer,
+    Title,
+    Total,
+  },
+  setup() {
+    const donationForm = ref({...donation});
+    const state = reactive({
+      donor: {...donor},
+      donations: [],
+    })
+    const open = ref(true);
+    const step = ref(1);
+    const stepOneCompleted = ()=>{
+      if(editIndex.value == null){
+        state.donations.push({...donationForm.value})
+      }else{
+        state.donations[editIndex.value] = { ...donationForm.value }
+      }
+      step.value=2;
+    }
+    const stepTwoCompleted = ()=>{
+      
+      step.value=3;
     }
 
-    let showDonationButton = document.querySelector(".synergy-btn-show-donation-modal");
-    if (showDonationButton != null) {
-      showDonationButton.addEventListener("click", () => {
-        openDonationModal();
-      });
+
+    const editIndex = ref(null);
+    const edit = (index) =>{
+      editIndex.value = index;
+      donationForm.value = {
+        ...state.donations[index]
+      }
+      step.value = 1;
     }
-  }
-}
-function bindProjectSelectorClick() {
-  if (document.getElementById("donationModal")) {
-    let btnAddToCart = document.querySelector(".btn-add-project-to-cart");
-    if (btnAddToCart != null) {
-      btnAddToCart.addEventListener("click", (e) => {
-        let category_id = e.target.getAttribute('data-category-id')
-        let project_id = e.target.getAttribute('data-project-id')
 
-        state.quickDonation = {
-          category_id: category_id,
-          project_id:project_id
-        }
-        
-        donationComponentRef.value.quickDonate(state.quickDonation)
-
-        state.isAddDonationOpened = true
-      });
+    const add = () =>{
+      editIndex.value = null;
+      donationForm.value = {
+        ...donation
+      }
+      step.value = 1;
     }
-  }
-}
-
-const hasMonthly = computed(() => {
-  return state.donations.some((d) => d.monthly);
-});
-
-
-function addDonation() {
-  if (validateDonation()) {
-    if (state.selectedItem == null) {
-      state.donations = [...state.donations, { ...state.current_donation }];
-    } else {
-      state.donations[state.selectedItem] = state.current_donation;
-      state.selectedItem = null;
-    }
-    state.current_donation = { ...current_donation };
-    state.errors = {};
-    stepForward();
-  }
-}
-
-function stepForward() {
-  state.step++;
-}
-
-function removeItem(index) {
-  state.donations.splice(index, 1);
-}
-
-function editItem(index) {
-  state.selectedItem = index;
-  state.current_donation = state.donations[index];
-  state.step = 1;
-}
-
-// async function storeDonation() {
-//   if (validateDonation()) {
-//     let form = state.form;
-//     form.donations = state.donations;
-//     form.donations.map((f) => {
-//       state.totalAmount += f.amount * f.qty;
-//       f.totalAmount = f.amount * f.qty;
-//       return (f.amount = f.amount * f.qty);
-//     });
-//     state.form = form;
-
-//     stepForward();
-//   }
-// }
-
-// async function stripePayment(token) {
-//   state.form.donations = state.donations
-//   let { data } = await Api.saveDonation(state.form);
-//   if (data.success == true) {
-//     let payment = {};
-//     payment.token = token;
-//     payment.name = state.form.first_name;
-//     payment.email = state.form.email;
-//     payment.amount = { monthly: 0, single: 0 };
-//     payment.donor = data.donor;
-//     payment.monthly_donations = data.monthly_donations;
-//     state.donations.map((f) => {
-//       if (f.monthly) {
-//         payment.amount.monthly += f.amount;
-//       }
-//       if (!f.monthly) {
-//         payment.amount.single += f.amount;
-//       }
-//     });
-//     let pay = await Api.makePayment(payment);
-//     if (pay.data.success) {
-//       initAgain();
-//       showSuccessPage();
-//     }
-//   }
-// }
-
-// async function PaypalPaymentSuccess(response) {
-//   state.form.donations = state.donations
-//   let { data } = await Api.saveDonation(state.form);
-
-//   initAgain();
-//   showSuccessPage();
-// }
-
-function initAgain() {
-  localStorage.removeItem('synergi-zuf-donations')
-  state.donations = [];
-}
-
-function showSuccessPage() {
-  // state.firstPage = true
-}
-
-function onlyNumber($event) {
-  let keyCode = $event.keyCode ? $event.keyCode : $event.which;
-  if ((keyCode < 48 || keyCode > 57) && keyCode !== 46) {
-    $event.preventDefault();
-  }
-}
-
-async function getPublicKey() {
-  const { data } = await Api.fetchGatewayKey("stripe");
-  state.stripePublicKey = data?.data?.public_key;
-}
-function openModel() {
-  state.isCartOpened = true
-}
-function openDonationModal() {
-  state.isAddDonationOpened = true
-}
-
-function assets(asset) {
-  return Api.assets(asset);
-}
-
-function donationAdded(donation) {
-  if (state.selectedItem == null) {
-    state.donations = [...state.donations, { ...donation }];
-    localStorage.setItem('synergi-zuf-donations',JSON.stringify(state.donations))
-  } else {
-    state.donations[state.selectedItem] = state.current_donation;
-    state.selectedItem = null;
-  } 
-}
-
-function toggleCustomProject(type, selected) {
-  console.log(type,selected)
-  if (type == "admin_fee") { 
-    state.form.admin_fee_cover = selected
-    // console.log(type, selected, state.form.admin_fee_cover)
-    
-  } else {
-    state.form.paper_copy = selected
-    // console.log(type,selected,state.form.paper_copy)
-  }
-}
-
-function updateMiniCart(amount) {
-  let minicart = document.getElementById("synergy-mini-cart-label");
-  if (minicart) {
-    minicart.innerText = "£" + parseFloat(amount).toFixed(2);
-  }
-}
+    return {
+      donationForm,
+      open,
+      step,
+      state,
+      stepOneCompleted,
+      stepTwoCompleted,
+      edit,
+      add
+    };
+  },
+};
 </script>
-  
 <template>
-  <div id="synergy-donation-tailwind">
-    <VueSidePanel v-model="state.isCartOpened" lock-scroll class="md:w-1/3 w-full bg-gray-100">
-      <Basket :donations="state.donations" 
-            :form="state.form" 
-            :stripePublicKey="state.stripePublicKey"
-            @toggleCustomProject="toggleCustomProject" 
-            @initAgain="initAgain"
-            @totalAmount="updateMiniCart"
-            @removeItem="removeItem"/>
-    </VueSidePanel>
-    <VueSidePanel v-model="state.isAddDonationOpened" lock-scroll class="md:w-1/3 w-full bg-gray-100">
-      <DonationModal 
-      ref="donationComponentRef"
-      @added="donationAdded"/>
-    </VueSidePanel>
-  </div>
+  <button @click="open = true">open</button>
+  <VueFinalModal
+    v-slot="{ close }"
+    overlay-class=""
+    classes="min-h-[calc(100%_-_60px)] py-10 overflow-auto "
+    content-class="max-w-[1400px] min-h-full flex flex-col m-auto bg-white rounded-3xl overflow-hidden"
+    v-model="open"
+  >
+    <Header/>
+
+    <main  class="h-full flex flex-col flex-1 justify-between ">
+      <div class="max-w-[900px] mx-auto px-4">
+        <Title />
+        <div class="flex items-center max-w-[700px] mx-auto my-4">
+          <progress-step
+            v-for="(s, i) in 3"
+            :key="i"
+            :step="s"
+            :current="step"
+          />
+        </div>
+        <div class="max-w-[750px] mx-auto py-5 mb-10">
+          <DonationStep v-model="donationForm" v-if="step == 1" @forward.once="stepOneCompleted" />
+          <BasketStep v-model="state" v-if="step == 2" @forward="stepTwoCompleted" @edit="edit" @add-another="add" />
+          <DetailsStep v-model="state.donor"  v-if="step == 3"  @backward="step=2" @forward="step=4" />
+          <Stripe stripePublicKey="pk_test_51KEZblITpRY73U53TSXaNrW8Uj4zeIFKDFogBqAHeBFrqmtPgflNm5PY0gdbRStebJZnTvqe5GJhaZciHti7t20M00BMb5ZjIB" v-if="step == 4" />
+          <ThankyouStep v-if="step == 5" />
+        </div>
+      </div>
+
+      <Total v-if="step<4" :state="state" />
+    </main>
+
+    <Footer />
+  </VueFinalModal>
 </template>
+<style>
+@import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap");
+
+</style>

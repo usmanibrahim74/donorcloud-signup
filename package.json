@@ -1,17 +1,20 @@
 {
-  "name": "ziaulummah_modal",
+  "name": "donorcloud-plugin",
   "private": true,
   "version": "0.0.0",
-  "type": "module",
   "scripts": {
     "dev": "vite",
     "build": "vite build",
     "preview": "vite preview"
   },
   "dependencies": {
+    "@headlessui/vue": "^1.7.7",
+    "@heroicons/vue": "^2.0.13",
     "axios": "^1.2.1",
     "vue": "^3.2.45",
-    "vue3-side-panel": "^1.1.1"
+    "vue-currency-input": "^3.0.3",
+    "vue-final-modal": "^3.4.4",
+    "vuex": "^4.0.2"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

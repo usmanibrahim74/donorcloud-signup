@@ -1,6 +1,6 @@
 
 <script setup>
-import { ref, toRefs, watch } from 'vue'
+import { ref, toRefs, watch } from "@vue/reactivity"
 
 const props = defineProps({
   isOpened: Boolean

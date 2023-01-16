@@ -1,10 +1,10 @@
 import { createApp } from 'vue'
 import './style.css'
 import App from './App.vue'
+import mixin from "./mixin";
 import "https://js.stripe.com/v3/";
-import VueSidePanel from 'vue3-side-panel';
-import 'vue3-side-panel/dist/vue3-side-panel.css'
-const app = createApp(App);
 
-app.use(VueSidePanel);
+
+const app = createApp(App);
+app.mixin(mixin);
 app.mount('#custom_popup')
