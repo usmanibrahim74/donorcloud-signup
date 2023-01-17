@@ -2,14 +2,23 @@
   <div>
     <form>
       <div>
-        <p class="stripe__error mb-3 text-red-400 text-xs m-0" v-if="stripeError">
+        <p
+          class="stripe__error mb-3 text-red-400 text-xs m-0"
+          v-if="stripeError"
+        >
           {{ stripeError }}
         </p>
       </div>
       <div class="stripe mb-3">
         <div>
-          <div id="card-number" class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"></div>
-          <span class="stripe__error ml-5 text-red-400 text-xs" v-if="cardNumberError">
+          <div
+            id="card-number"
+            class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+          ></div>
+          <span
+            class="stripe__error ml-5 text-red-400 text-xs"
+            v-if="cardNumberError"
+          >
             {{ cardNumberError }}
           </span>
         </div>
@@ -18,16 +27,28 @@
       <div class="stripe__box">
         <div class="stripe__box__cvv mb-3">
           <div>
-            <div id="card-cvc" class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"></div>
-            <span class="stripe__error ml-5 text-red-400 text-xs" v-if="cardCvcError">
+            <div
+              id="card-cvc"
+              class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+            ></div>
+            <span
+              class="stripe__error ml-5 text-red-400 text-xs"
+              v-if="cardCvcError"
+            >
               {{ cardCvcError }}
             </span>
           </div>
         </div>
         <div class="stripe__box__expiry">
           <div>
-            <div id="card-expiry" class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"></div>
-            <span class="stripe__error ml-5 text-red-400 text-xs" v-if="cardExpiryError">
+            <div
+              id="card-expiry"
+              class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+            ></div>
+            <span
+              class="stripe__error ml-5 text-red-400 text-xs"
+              v-if="cardExpiryError"
+            >
               {{ cardExpiryError }}
             </span>
           </div>
@@ -35,37 +56,20 @@
       </div>
 
       <div class="flex items-center justify-center mt-8 gap-4">
-        <button type="button" @click="moveBack()" class="border-primary border-2 text-sm font-medium rounded-3xl py-3.5 px-3 md:px-6 bg-primary-100 text-primary transition duration-300 ease-in-out flex align-center items-center">
-          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 mr-3">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          Back
-        </button>
-        <button 
-          @click.prevent="submitFormToCreateToken()"
-          type="button" class="border-primary border-2 text-sm font-medium rounded-3xl py-3.5 px-3 md:px-6 bg-primary text-primary-50 transition duration-300 ease-in-out flex align-center items-center">
-          Donate
-          <svg v-if="!loading" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 ml-3">
-            <path stroke-linecap="round" stroke-linejoin="round" d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-          </svg>
-          <svg v-else xmlns="http://www.w3.org/2000/svg" xmlns:xlink="http://www.w3.org/1999/xlink" style="margin: auto;display: block; shape-rendering: auto;" width="20px" height="20px" viewBox="0 0 100 100" preserveAspectRatio="xMidYMid">
-            <circle cx="50" cy="50" fill="none" stroke="#FFFFFF" stroke-width="10" r="35" stroke-dasharray="164.93361431346415 56.97787143782138">
-              <animateTransform attributeName="transform" type="rotate" repeatCount="indefinite" dur="1s" values="0 50 50;360 50 50" keyTimes="0;1">
-              </animateTransform>
-            </circle>
-          </svg>
-        </button>
-        
-        
+        <Button @click="moveBack" text="Back" />
+        <Button @click.prevent="submitFormToCreateToken" active text="Donate" />
       </div>
     </form>
   </div>
 </template>
 <script>
-import axios from 'axios';
+import Button from './Button.vue';
 
 export default {
   props: ["amount","customer","stripePublicKey"],
+  components:{
+    Button
+  },
   data() {
     return {
       card: {
@@ -88,7 +92,8 @@ export default {
       error: false,
 
       loading: false,
-      url: import.meta.env.VITE_WEB_URL
+      url: import.meta.env.VITE_WEB_URL,
+      token: null,
     };
   },
 
@@ -98,8 +103,7 @@ export default {
 
   methods: {
     moveBack() {
-      console.log("moveBack")
-      this.$emit('moveBack')
+      this.$emit('backward')
     },
     setUpStripe() {
       const stripe = Stripe(this.stripePublicKey);
@@ -148,29 +152,31 @@ export default {
       }
     },
 
-    submitFormToCreateToken() {
+    validate(){
       this.clearCardErrors();
-      let valid = true;
-
       if (!this.card.number) {
-        valid = false;
         this.cardNumberError = "Card Number is Required";
+        return false;
       }
       if (!this.card.cvc) {
-        valid = false;
         this.cardCvcError = "CVC is Required";
+        return false;
       }
       if (!this.card.expiry) {
-        valid = false;
         this.cardExpiryError = "Month is Required";
+        return false;
       }
       if (this.stripeError) {
-        valid = false;
+        return false;
       }
-      if (valid) {
-        this.createToken();
+      return true;
+    },
+    submit(){
+      if(this.validate() && this.createToken()){
+        this.$emit("forward", token);
       }
     },
+
 
     createToken() {
       this.loading = true
@@ -183,9 +189,10 @@ export default {
        }).then(async (result) => {
         if (result.error) {
           this.stripeError = result.error.message;
+          return false;
         } else {
-          const token = result.token.id;
-          this.$emit("stripePayment", token);
+          this.token = result.token.id;
+          return true
         }
       });
     },

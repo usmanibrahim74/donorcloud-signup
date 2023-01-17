@@ -4,8 +4,8 @@
   >
     <div class="flex gap-2 justify-between">
       <div class="flex flex-col gap-1">
-        <h4 class="font-bold text-xl text-black">{{ model.project.text }}</h4>
-        <p class="text-sm">{{ model.donation_type.text }}</p>
+        <h4 class="font-bold text-xl text-black">{{ model.project.title }}</h4>
+        <p class="text-sm">{{ model.donation_type.name }}</p>
       </div>
       <p class="text-gray-600 text-lg font-medium">
         {{ $formatAmount(model.fixed_amount ?? model.amount) }}

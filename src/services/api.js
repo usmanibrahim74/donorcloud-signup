@@ -30,25 +30,16 @@ export default {
   makePayment(payload) {
     return axios.post(url("payments/pay"), payload);
   },
-  fetchCategories() {
-    return axios.get(url("categories"));
-  },
   fetchProjects(category_id) {
-    return axios.get(url(`project-by-category/${category_id}`));
+    return axios.get(url("projects"));
   },
   fetchProject(project_id) {
-    return axios.get(url(`project/${project_id}`));
+    return axios.get(url(`projects/${project_id}`));
   },
   fetchGatewayKey(gateway){
     return axios.get(url(`payments/gateways/${gateway}/key`));
   },
   assets(asset) {
     return import.meta.env.VITE_ASSETS_URL+ "/" + asset;
-  },
-  fetchAdminProjects() {
-    return axios.get(url(`admin-projects`));
-  },
-  fetchAllProjects() {
-    return axios.get(url("projects"));
   },
 };
