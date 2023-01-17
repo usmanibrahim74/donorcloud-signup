@@ -84,13 +84,14 @@ export default {
       step.value = 1;
     }
 
-    const makePayment = (token)=>{
-      console.log(token);
+    const makePayment = async (token)=>{
+      await Api.makePayment(token);
     }
 
-    const donate = (token)=>{
-      if(makePayment(token)){
-        saveDonation();
+    const donate = async ()=>{
+      if(makePayment()){
+        await Api.saveDonation(state);
+        step.value = 5;
       }
     }
 
