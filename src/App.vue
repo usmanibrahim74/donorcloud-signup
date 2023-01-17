@@ -85,7 +85,7 @@ export default {
     }
 
     const makePayment = (token)=>{
-
+      console.log(token);
     }
 
     const donate = (token)=>{
@@ -140,7 +140,7 @@ export default {
           <DonationStep v-model="donationForm" :projects="projects" v-if="step == 1" @forward.once="stepOneCompleted" />
           <BasketStep v-model="state" v-if="step == 2" @forward="stepTwoCompleted" @edit="edit" @add-another="add" />
           <DetailsStep v-model="state.donor"  v-if="step == 3"  @backward="step=2" @forward="step=4" />
-          <Stripe :stripePublicKey="gatewayKey" v-if="gatewayKey" v-show="step == 4" @backward="step=3"  @forward="donate" />
+          <Stripe :customer="state.donor" :stripePublicKey="gatewayKey" v-if="gatewayKey" v-show="step == 4" @backward="step=3"  @forward="donate" />
           <ThankyouStep v-if="step == 5" />
         </div>
       </div>

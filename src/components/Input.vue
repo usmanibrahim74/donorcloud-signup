@@ -1,7 +1,7 @@
 <template lang="">
   <div>
     <input
-      type="text"
+      :type="type"
       v-model="model"
       class="flex w-full rounded-3xl border-2 px-6 py-3.5"
       :class="[

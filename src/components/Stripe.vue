@@ -1,26 +1,22 @@
 <template>
   <div>
     <form>
-      <div>
-        <p
-          class="stripe__error mb-3 text-red-400 text-xs m-0"
-          v-if="stripeError"
-        >
-          {{ stripeError }}
-        </p>
-      </div>
       <div class="stripe mb-3">
         <div>
           <div
             id="card-number"
-            class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+            class="block w-full rounded-3xl border-2 px-6 py-4 font-normal transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+            :class="[
+              errors.includes('number')
+                ? 'text-red-700 bg-red-100 border-red-700'
+                : 'text-gray-700 bg-primary-100 border-primary',
+            ]"
           ></div>
-          <span
-            class="stripe__error ml-5 text-red-400 text-xs"
-            v-if="cardNumberError"
-          >
-            {{ cardNumberError }}
-          </span>
+          <HasError
+            class="stripe__error ml-5"
+            :message="messages.number.replace(':field', fields.number)"
+            v-if="errors.includes('number')"
+          />
         </div>
       </div>
 
@@ -29,185 +25,165 @@
           <div>
             <div
               id="card-cvc"
-              class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+              class="block w-full rounded-3xl border-2 px-6 py-4 font-normal transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+              :class="[
+                errors.includes('cvc')
+                  ? 'text-red-700 bg-red-100 border-red-700'
+                  : 'text-gray-700 bg-primary-100 border-primary',
+              ]"
             ></div>
-            <span
-              class="stripe__error ml-5 text-red-400 text-xs"
-              v-if="cardCvcError"
-            >
-              {{ cardCvcError }}
-            </span>
+            <HasError
+              class="stripe__error ml-5"
+              :message="messages.cvc.replace(':field', fields.cvc)"
+              v-if="errors.includes('cvc')"
+            />
           </div>
         </div>
         <div class="stripe__box__expiry">
           <div>
             <div
               id="card-expiry"
-              class="block w-full rounded-3xl border-2 px-6 py-4 font-normal text-gray-700 bg-primary-100 border-primary transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+              class="block w-full rounded-3xl border-2 px-6 py-4 font-normal transition ease-in-out m-0 focus:text-gray-700 focus:bg-white focus:border-green focus:outline-none StripeElement StripeElement--empty"
+              :class="[
+                errors.includes('expiry')
+                  ? 'text-red-700 bg-red-100 border-red-700'
+                  : 'text-gray-700 bg-primary-100 border-primary',
+              ]"
             ></div>
-            <span
-              class="stripe__error ml-5 text-red-400 text-xs"
-              v-if="cardExpiryError"
-            >
-              {{ cardExpiryError }}
-            </span>
+            <HasError
+              class="stripe__error ml-5"
+              :message="messages.expiry.replace(':field', fields.expiry)"
+              v-if="errors.includes('expiry')"
+            />
           </div>
+        </div>
+        <div>
+          <HasError
+            class="stripe__error ml-5"
+            :message="messages.stripe"
+            v-if="messages.stripe != ''"
+          />
         </div>
       </div>
 
       <div class="flex items-center justify-center mt-8 gap-4">
         <Button @click="moveBack" text="Back" />
-        <Button @click.prevent="submitFormToCreateToken" active text="Donate" />
+        <Button @click.prevent="submit" active text="Donate" />
       </div>
     </form>
   </div>
 </template>
 <script>
-import Button from './Button.vue';
+import Button from "./Button.vue";
+import HasError from "./HasError.vue";
 
 export default {
-  props: ["amount","customer","stripePublicKey"],
-  components:{
-    Button
+  props: ["amount", "customer", "stripePublicKey"],
+  components: {
+    Button,
+    HasError,
   },
   data() {
     return {
       card: {
-        cvc: "",
-        number: "",
-        expiry: "",
+        number: false,
+        cvc: false,
+        expiry: false,
       },
 
       //elements
-      cardNumber: "",
-      cardExpiry: "",
-      cardCvc: "",
+      elements: {
+        number: "",
+        cvc: "",
+        expiry: "",
+      },
       stripe: null,
 
       // errors
-      stripeError: "",
-      cardCvcError: "",
-      cardExpiryError: "",
-      cardNumberError: "",
-      error: false,
+      messages: {
+        stripe: "",
+        number: "The :field field is required",
+        cvc: "The :field field is required",
+        expiry: "The :field field is required",
+      },
+
+      fields: {
+        stripe: "",
+        number: "card number",
+        cvc: "cvc",
+        expiry: "expiry date",
+      },
+      errors: [],
 
       loading: false,
       url: import.meta.env.VITE_WEB_URL,
-      token: null,
     };
   },
 
   mounted() {
     this.setUpStripe();
   },
+  computed: {},
 
   methods: {
     moveBack() {
-      this.$emit('backward')
+      this.$emit("backward");
     },
     setUpStripe() {
       const stripe = Stripe(this.stripePublicKey);
       this.stripe = stripe;
 
       const elements = stripe.elements();
-      this.cardCvc = elements.create("cardCvc");
-      this.cardExpiry = elements.create("cardExpiry");
-      this.cardNumber = elements.create("cardNumber");
-
-      this.cardCvc.mount("#card-cvc");
-      this.cardExpiry.mount("#card-expiry");
-      this.cardNumber.mount("#card-number");
-
+      this.elements = {
+        number: elements.create("cardNumber"),
+        cvc: elements.create("cardCvc"),
+        expiry: elements.create("cardExpiry"),
+      };
+      this.elements.number.mount("#card-number");
+      this.elements.cvc.mount("#card-cvc");
+      this.elements.expiry.mount("#card-expiry");
       this.listenForErrors();
     },
 
     listenForErrors() {
-      const vm = this;
-
-      this.cardNumber.addEventListener("change", (event) => {
-        vm.toggleError(event);
-        vm.cardNumberError = "";
-        vm.card.number = event.complete ? true : false;
-      });
-
-      this.cardExpiry.addEventListener("change", (event) => {
-        vm.toggleError(event);
-        vm.cardExpiryError = "";
-        vm.card.expiry = event.complete ? true : false;
-      });
-
-      this.cardCvc.addEventListener("change", (event) => {
-        vm.toggleError(event);
-        vm.cardCvcError = "";
-        vm.card.cvc = event.complete ? true : false;
+      // this.validate();
+      Object.keys(this.elements).forEach((key) => {
+        this.elements[key].addEventListener("change", (event) => {
+          this.card[key] = event.complete ? true : false;
+          this.errors = this.errors.filter((e) => e != key);
+          let message = "The :field field is required";
+          if (event.error) {
+            message = event.error.message;
+            this.errors.push(key);
+          }
+          this.messages[key] = message;
+        });
       });
     },
 
-    toggleError(event) {
-      if (event.error) {
-        this.stripeError = event.error.message;
-        this.error = true
-      } else {
-        this.stripeError = "";
-      }
+    validate() {
+      this.errors = Object.keys(this.card).filter((r) => !this.card[r]);
+      return !this.errors.length;
     },
 
-    validate(){
-      this.clearCardErrors();
-      if (!this.card.number) {
-        this.cardNumberError = "Card Number is Required";
-        return false;
+    submit() {
+      if (this.validate()) {
+        this.loading = true;
+        this.stripe
+          .createToken(this.elements.number, {
+            name: this.customer.email,
+            address_line1: this.customer.address_line_1,
+            address_city: this.customer.city,
+            address_country: this.customer.country,
+          })
+          .then(async (result) => {
+            if (result.error) {
+              this.messages.stripe = result.error.message;
+            } else {
+              this.$emit("forward", result.token.id);
+            }
+          });
       }
-      if (!this.card.cvc) {
-        this.cardCvcError = "CVC is Required";
-        return false;
-      }
-      if (!this.card.expiry) {
-        this.cardExpiryError = "Month is Required";
-        return false;
-      }
-      if (this.stripeError) {
-        return false;
-      }
-      return true;
-    },
-    submit(){
-      if(this.validate() && this.createToken()){
-        this.$emit("forward", token);
-      }
-    },
-
-
-    createToken() {
-      this.loading = true
-      this.stripe.createToken(this.cardNumber,
-      {
-        name: this.customer.email,
-        address_line1: this.customer.address_line_1,
-        address_city: this.customer.city,
-        address_country: this.customer.country
-       }).then(async (result) => {
-        if (result.error) {
-          this.stripeError = result.error.message;
-          return false;
-        } else {
-          this.token = result.token.id;
-          return true
-        }
-      });
-    },
-
-    clearElementsInputs() {
-      this.cardCvc.clear();
-      this.cardExpiry.clear();
-      this.cardNumber.clear();
-    },
-
-    clearCardErrors() {
-      this.stripeError = "";
-      this.cardCvcError = "";
-      this.cardExpiryError = "";
-      this.cardNumberError = "";
     },
   },
 };
