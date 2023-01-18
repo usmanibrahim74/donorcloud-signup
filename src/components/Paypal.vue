@@ -1,19 +1,18 @@
 <template>
   <div>
     <div ref="paypal"></div>
-    <div class="my-6 flex justify-center">
-      <button type="button" @click="moveBack()" class="px-6 pt-2.5 pb-2 bg-gray-600 text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center">
-        <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 mr-3">
-          <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-        </svg>
-        Back
-      </button>
+    <div class="flex items-center justify-center mt-8 gap-4">
+          <Button @click="moveBack" text="Back" />
     </div>
-
   </div>
 </template>
 <script>
+
+import Button from "./Button.vue";
 export default {
+  components: {
+    Button
+  },
   props:{
     donations: {
       type: Array,
@@ -22,10 +21,6 @@ export default {
     projects:{
       type: Array,
       default: []
-    },
-    form: {
-      type: Object,
-      default:{}
     }
   },
   data() {
@@ -37,26 +32,8 @@ export default {
         description: "leg lamp from that one movie",
         img: "./assets/lamp.jpg",
       },
-      purchase_units: [],
-      static_projects: {
-        admin_fee: {
-          reference_id: 'admin_fee_cover',
-          description: 'Admin Fee Cover',
-          amount: {
-            currency_code: "USD",
-            value: 10
-          }
-        },
-        paper_copy: {
-          reference_id: 'paper_copy',
-          description: 'Paper Copy',
-          amount: {
-            currency_code: "USD",
-            value: 10
-          }
-        }
-          
-      }
+      purchase_units:[],
+      // totalAmount: null
     };
   },
   mounted() {
@@ -70,34 +47,31 @@ export default {
   },
   methods: {
     moveBack() {
-      this.$emit('moveBack')
+      this.$emit("backward");
     },
     makeDonationProduct(){
       this.purchase_units = []
-
-      if (this.form.admin_fee_cover) {
-        this.purchase_units.push(this.static_projects.admin_fee)
-      }
-      
-      if (this.form.paper_copy) {
-        this.purchase_units.push(this.static_projects.paper_copy)
-      }
-
-      this.donations.map((donation, index) => {
-        let amount = (donation.amount) ? donation.amount : donation.fix_amount 
+      this.donations.map((donation,index) => {
         this.purchase_units.push({
-          reference_id: this.getReferenceId(donation.project,index),
-          description: donation.project.title,
+          reference_id: this.getReferenceId(donation.project_id,index),
+          description: this.projectName(donation.project_id),
           amount: {
             currency_code: "USD",
-            value: amount
+            value: donation.fixed_amount ?? donation.amount ?? 0
           }
         })  
       })
       
     },
-    getReferenceId(project, index) {
-      return index + '_' + project.title;
+    getReferenceId(id,index){
+      let reference = this.projects.find((p) => p.id == id);
+      return index + '_' + reference.tenant_id;
+    },
+    projectName(id) {
+      let project = this.projects.find((f) => {
+        return f.id == id;
+      });
+      return project.title;
     },
     setupPaypal() {
       this.loaded = true;
@@ -110,13 +84,13 @@ export default {
           },
           onApprove: async (data, actions) => {
             const order = await actions.order.capture();
-            this.$emit('PaymentSuccess', order)
+            this.$emit('forward', order)
             this.paidFor = true;
             console.log(order);
 
           },
           onError: (err) => {
-              this.$emit('PaymentFailed', err)
+              this.$emit('error', err)
             console.log(err);
           },
         })

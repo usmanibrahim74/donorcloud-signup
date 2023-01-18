@@ -84,7 +84,7 @@
       placeholder="Notes (Optional)"
     />
     <GiftAid v-model="model.gift_aid" :error="errors.includes('gift_aid')" />
-    <PaymentMethod v-model="model.payment_type" />
+    <PaymentMethod v-model="model.payment_type" :hasMonthly="hasMonthly" />
     <div class="flex items-center justify-center mt-8 gap-4">
       <Button class="px-3" text="Back" @click="$emit('backward')" />
       <Button type="submit" text="Proceed to payment" active />
@@ -114,6 +114,10 @@ export default {
       type: Object,
       required: true,
     },
+    hasMonthly: {
+      type: Boolean,
+      required: true,
+    },
   },
   setup(props, { emit }) {
     const model = computed({
@@ -123,7 +127,7 @@ export default {
 
     const submit = () => {
       if (validate()) {
-        emit("forward");
+        emit("forward", model);
       }
     };
 

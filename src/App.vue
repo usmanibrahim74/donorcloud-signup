@@ -9,6 +9,7 @@ import DonationStep from "./steps/Donation.vue";
 import BasketStep from "./steps/Basket.vue";
 import DetailsStep from "./steps/Details.vue";
 import Stripe from "./components/Stripe.vue";
+import Paypal from "./components/Paypal.vue";
 import ThankyouStep from "./steps/Thankyou.vue";
 import ProgressStep from "./components/ProgressStep.vue";
 import Header from "./components/Header.vue";
@@ -28,6 +29,7 @@ export default {
     Stripe,
     ThankyouStep,
     ProgressStep,
+    Paypal,
     Header,
     Footer,
     Title,
@@ -90,11 +92,47 @@ export default {
       await Api.makePayment(token);
     }
 
+    const paymentType = ref(null);
+    const paymentTypeStep = (model) => {
+      paymentType.value = model.value.payment_type
+      step.value = 4
+    }
+
+    const hasMonthly = computed(() => {
+      return state.donations.some((d) => d.monthly);
+    });
+
+    const monthlyDonations = computed(()=> {
+      return state.donations
+        .filter((d) => d.monthly)
+    })
+
+    const oneTimeDonations = computed(()=> {
+      return state.donations
+        .filter((d) => !d.monthly)
+    })
+
+    const total_onetime = computed(() => {
+      return oneTimeDonations.value
+        .map((d) => (d.fixed_amount ?? d.amount ?? 0) * d.qty)
+        .reduce((a,b) => a+b,0)
+    });
+    
+    const total_monthly = computed(() => {
+      return monthlyDonations.value
+        .map((d) => (d.fixed_amount ?? d.amount ?? 0) * d.qty)
+        .reduce((a,b) => a+b,0)
+    });
+
     const donate = async ()=>{
       if(makePayment()){
+        saveDonation()
+      }
+    }
+
+    const saveDonation = async ()=>{
         await Api.saveDonation(state);
         step.value = 5;
-      }
     }
 
     onMounted(()=>{
@@ -113,6 +151,13 @@ export default {
       add,
       projects,
       donate,
+      paymentTypeStep,
+      paymentType,
+      hasMonthly,
+      total_onetime,
+      total_monthly,
+      oneTimeDonations,
+      monthlyDonations
     };
   },
 };
@@ -142,13 +187,16 @@ export default {
         <div class="max-w-[750px] mx-auto py-5 mb-10">
           <DonationStep v-model="donationForm" :projects="projects" v-if="step == 1" @forward.once="stepOneCompleted" />
           <BasketStep v-model="state" v-if="step == 2" @forward="stepTwoCompleted" @edit="edit" @add-another="add" />
-          <DetailsStep v-model="state.donor"  v-if="step == 3"  @backward="step=2" @forward="step=4" />
-          <Stripe :customer="state.donor" :stripePublicKey="gatewayKey" v-if="gatewayKey" v-show="step == 4" @backward="step=3"  @forward="donate" />
+          <DetailsStep v-model="state.donor" v-if="step == 3" :hasMonthly="hasMonthly" @backward="step=2" @forward="paymentTypeStep" />
+          <div v-if="step == 4">
+            <Stripe :customer="state.donor" :stripePublicKey="gatewayKey" v-if="gatewayKey && paymentType == 'credit'" v-show="step == 4" @backward="step=3"  @forward="donate" />
+            <Paypal v-if="paymentType == 'paypal' && !hasMonthly" :donations="oneTimeDonations" :projects="projects" v-show="step == 4" @backward="step=3" @forward="donate"/>
+          </div>
           <ThankyouStep v-if="step == 5" />
         </div>
       </div>
 
-      <Total v-if="step<5" :state="state" />
+      <Total v-if="step<5" :oneTime="total_onetime" :monthly="total_monthly" />
     </main>
 
     <Footer />
