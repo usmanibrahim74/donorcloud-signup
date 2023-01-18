@@ -141,6 +141,7 @@ export default {
         donationForm.value = {...donation};
         state.donor = {...donor};
         state.donations = [];
+        step.value = 1
       }
     }
 
