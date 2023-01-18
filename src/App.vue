@@ -96,6 +96,10 @@ export default {
       step.value = 4
     }
 
+    const hasMonthly = computed(() => {
+      return state.donations.some((d) => d.monthly);
+    });
+
     const monthlyDonations = computed(()=> {
       return state.donations
         .filter((d) => d.monthly)
@@ -111,7 +115,7 @@ export default {
         .map((d) => (d.fixed_amount ?? d.amount ?? 0) * d.qty)
         .reduce((a,b) => a+b,0)
     });
-
+    
     const total_monthly = computed(() => {
       return monthlyDonations.value
         .map((d) => (d.fixed_amount ?? d.amount ?? 0) * d.qty)
@@ -147,6 +151,7 @@ export default {
       donate,
       paymentTypeStep,
       paymentType,
+      hasMonthly,
       total_onetime,
       total_monthly,
       oneTimeDonations,
@@ -180,12 +185,12 @@ export default {
         <div class="max-w-[750px] mx-auto py-5 mb-10">
           <DonationStep v-model="donationForm" :projects="projects" v-if="step == 1" @forward.once="stepOneCompleted" />
           <BasketStep v-model="state" v-if="step == 2" @forward="stepTwoCompleted" @edit="edit" @add-another="add" />
-          <DetailsStep v-model="state.donor" v-if="step == 3"  @backward="step=2" @forward="paymentTypeStep" />
+          <DetailsStep v-model="state.donor" v-if="step == 3" :hasMonthly="hasMonthly" @backward="step=2" @forward="paymentTypeStep" />
           <div v-if="step == 4">
             <Stripe :customer="state.donor" :stripePublicKey="gatewayKey" v-if="gatewayKey && paymentType == 'credit'" v-show="step == 4" @backward="step=3"  @forward="donate" />
-            <Paypal v-else :donations="oneTimeDonations" :projects="projects" v-show="step == 4" @backward="step=3" @forward="donate"/>
+            <Paypal v-if="paymentType == 'paypal' && !hasMonthly" :donations="oneTimeDonations" :projects="projects" v-show="step == 4" @backward="step=3" @forward="donate"/>
           </div>
-          <ThankyouStep v-if="step == 6" />
+          <ThankyouStep v-if="step == 5" />
         </div>
       </div>
 

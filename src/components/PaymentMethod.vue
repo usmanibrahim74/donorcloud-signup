@@ -9,6 +9,7 @@
         v-for="method in methods"
         :key="method.name"
         :value="method.id"
+        :disabled="method.id === 'paypal' && hasMonthly"
         v-slot="{ active, checked }"
       >
         <div
@@ -68,6 +69,10 @@ export default {
   },
   props:{
     modelValue: {
+      required: true,
+    },
+    hasMonthly: {
+      type: Boolean,
       required: true,
     },
   },
