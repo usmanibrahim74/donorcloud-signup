@@ -17,7 +17,7 @@
       understand that Gift Aid will fund administrative costs as well as our
       charitable programmes.
     </p>
-    <label class="font-sans flex gap-3 items-center">
+    <label class="font-sans flex gap-3 items-center m-0 text-base">
       <input :value="true" v-model="model" type="checkbox" class="scale-150" />
       <span> I Agree, I would like to boost my donation with Gift Aid </span>
     </label>

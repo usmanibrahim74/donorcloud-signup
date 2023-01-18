@@ -13,7 +13,7 @@
       class="shadow bg-primary-100 rounded-3xl p-4 mt-2 relative arrow-up"
       :style="arrowVar"
     >
-      <p class="text-primary">
+      <p class="text-primary text-base">
         {{ variations[selectedVariationIndex].description }}
       </p>
     </div>

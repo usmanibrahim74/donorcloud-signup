@@ -3,7 +3,7 @@
     <textarea
       type="text" rows="3"
       v-model="model"
-      class="flex w-full rounded-3xl border-2 px-6 py-3.5"
+      class="flex w-full rounded-3xl border-2 px-6 py-3.5 text-base"
       :class="[
         error ? 'bg-red-50 border-red-300' : 'bg-primary-100 border-primary',
       ]"
