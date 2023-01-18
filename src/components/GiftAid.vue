@@ -18,7 +18,7 @@
       charitable programmes.
     </p>
     <label class="font-sans flex gap-3 items-center m-0 text-base">
-      <input :value="true" v-model="model" type="checkbox" class="scale-150" />
+      <input :value="true" v-model="model" type="checkbox" class="" />
       <span> I Agree, I would like to boost my donation with Gift Aid </span>
     </label>
     <HasError class="ml-5 mt-1" v-if="error" message="The gift aid field is required" />

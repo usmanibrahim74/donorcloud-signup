@@ -135,6 +135,14 @@ export default {
         step.value = 5;
     }
 
+    const handleClosed = () => {
+      if(step.value == 5){
+        donationForm.value = {...donation};
+        state.donor = {...donor};
+        state.donations = [];
+      }
+    }
+
     onMounted(()=>{
       fetchProjects();
       fetchGatewayKey();
@@ -157,7 +165,8 @@ export default {
       total_onetime,
       total_monthly,
       oneTimeDonations,
-      monthlyDonations
+      monthlyDonations,
+      handleClosed
     };
   },
 };
@@ -170,6 +179,7 @@ export default {
     classes="min-h-[calc(100%_-_60px)] py-10 overflow-auto "
     content-class="max-w-[1400px] min-h-full flex flex-col m-auto bg-white rounded-3xl overflow-hidden"
     v-model="open"
+    @closed="handleClosed"
   >
     <Header @close="close" />
 
