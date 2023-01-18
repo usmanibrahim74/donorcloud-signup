@@ -2,7 +2,7 @@
   <Listbox v-model="model">
     <div class="relative">
       <ListboxButton
-        class="relative h-full w-full cursor-default rounded-3xl border-2 no-underline m-0 py-3.5 pl-5 pr-10 text-left focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-300 sm:text-sm"
+        class="relative h-full w-full cursor-default rounded-3xl border-2 border-solid no-underline m-0 py-3.5 pl-5 pr-10 text-left focus:outline-none focus-visible:border-primary focus-visible:ring-2 focus-visible:ring-white focus-visible:ring-opacity-75 focus-visible:ring-offset-2 focus-visible:ring-offset-primary-300 sm:text-sm"
         :class="[
           error ? 'bg-red-50 border-red-300' : 'bg-primary-100 border-primary',
         ]"
