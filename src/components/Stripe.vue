@@ -1,5 +1,6 @@
 <template>
   <div>
+    <Loader v-if="loading"  message="Please Wait..." />
     <form>
       <div class="stripe mb-3">
         <div>
@@ -76,12 +77,14 @@
 <script>
 import Button from "./Button.vue";
 import HasError from "./HasError.vue";
+import Loader from "./Loader.vue";
 
 export default {
   props: ["amount", "customer", "stripePublicKey"],
   components: {
     Button,
     HasError,
+    Loader,
   },
   data() {
     return {

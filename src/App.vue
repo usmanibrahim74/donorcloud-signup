@@ -15,6 +15,7 @@ import Header from "./components/Header.vue";
 import Footer from "./components/Footer.vue";
 import Title from "./components/Title.vue";
 import Total from "./components/Total.vue";
+import Button from "./components/Button.vue";
 
 
 export default {
@@ -31,6 +32,7 @@ export default {
     Footer,
     Title,
     Total,
+    Button,
   },
   setup() {
     const donationForm = ref({...donation});
@@ -38,7 +40,7 @@ export default {
       donor: {...donor},
       donations: [],
     })
-    const open = ref(true);
+    const open = ref(false);
     const step = ref(1);
     const stepOneCompleted = ()=>{
       if(editIndex.value == null){
@@ -116,7 +118,7 @@ export default {
 };
 </script>
 <template>
-  <button @click="open = true">open</button>
+  <Button text="Donate" @click="open=true" class="fixed right-10 bottom-6" active />
   <VueFinalModal
     v-slot="{ close }"
     overlay-class=""
@@ -124,9 +126,9 @@ export default {
     content-class="max-w-[1400px] min-h-full flex flex-col m-auto bg-white rounded-3xl overflow-hidden"
     v-model="open"
   >
-    <Header/>
+    <Header @close="close" />
 
-    <main  class="h-full flex flex-col flex-1 justify-between ">
+    <main  class="relative h-full flex flex-col flex-1 justify-between ">
       <div class="max-w-[900px] mx-auto px-4">
         <Title />
         <div class="flex items-center max-w-[700px] mx-auto my-4">
@@ -146,7 +148,7 @@ export default {
         </div>
       </div>
 
-      <Total v-if="step<4" :state="state" />
+      <Total v-if="step<5" :state="state" />
     </main>
 
     <Footer />

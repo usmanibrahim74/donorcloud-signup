@@ -1,6 +1,6 @@
 <template lang="">
   <form @submit.prevent="submit" class="flex flex-col gap-3">
-    <h4 class="font-bold text-lg mb-2">Personal Information</h4>
+    <h4 class="font-sans font-bold text-lg mb-2">Personal Information</h4>
     <div class="grid grid-cols-2 gap-3">
       <Input
         v-model="model.first_name"
@@ -70,7 +70,7 @@
       field="phone number"
       placeholder="Phone Number (Optional)"
     />
-    <h4 class="font-bold text-lg mt-5 mb-2">Additional Information</h4>
+    <h4 class="font-sans font-bold text-lg mt-5 mb-2">Additional Information</h4>
     <Input
       v-model="model.reason"
       :error="errors.includes('reason')"

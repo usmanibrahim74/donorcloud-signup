@@ -7,7 +7,7 @@
         active ? 'border-primary text-primary' : 'text-primary',
       ]"
     >
-      <template v-if="step >= current">
+      <template v-if="!completed">
         {{ step }}
       </template>
       <template v-else>
@@ -52,9 +52,15 @@ export default {
   },
   setup(props) {
     const active = computed(() => {
+      if(props.current == 4 &&  props.step == 3){
+        return true;
+      }
       return props.current == props.step;
     });
     const completed = computed(() => {
+      if(props.current == 4 &&  props.step == 3){
+        return false;
+      }
       return props.current > props.step;
     });
 

@@ -5,7 +5,7 @@
       <Button class="w-full" @click="addAnother" active text="Make Another Donation" />
       <Button class="w-full" @click="proceed"  text="Proceed To Checkout" />
     </div>
-    <p class="text-center mt-8 mb-6 text-gray-400 text-2xl font-medium">Further Support Us</p>
+    <p class="font-sans text-center mt-8 mb-6 text-gray-400 text-2xl font-medium">Further Support Us</p>
     <div class="flex gap-4 text-center">
         <SupportFee text="Admin Fee" amount="$3.00" :active="model.admin_fee"  @click="model.admin_fee = !model.admin_fee" />
         <SupportFee text="Paper Receipt Fee" amount="$3.00" :active="model.paper_fee"  @click="model.paper_fee = !model.paper_fee" />

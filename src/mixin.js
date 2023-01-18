@@ -8,6 +8,10 @@ export default {
                 amount = 0;
             }
             return `$ ${amount.toFixed(2)}`
+        },
+        $getAsset(asset){
+            const url = window.SynergiAssetURL+asset;
+            return url
         }
     }
 }

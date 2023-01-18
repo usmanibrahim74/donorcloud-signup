@@ -6,8 +6,8 @@
     ]"
     type="button"
   >
-    <h3 class="text-xl font-medium">{{text}}</h3>
-    <p class="font-extrabold text-lg">{{ amount }}</p>
+    <h3 class="font-sans text-xl font-medium">{{text}}</h3>
+    <p class="font-sans font-extrabold text-lg">{{ amount }}</p>
   </button>
 </template>
 <script>
