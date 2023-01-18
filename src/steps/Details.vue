@@ -123,7 +123,7 @@ export default {
 
     const submit = () => {
       if (validate()) {
-        emit("forward");
+        emit("forward", model);
       }
     };
 
