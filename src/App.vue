@@ -136,6 +136,7 @@ export default {
     }
 
     const handleClosed = () => {
+      console.log(step.value);
       if(step.value == 5){
         donationForm.value = {...donation};
         state.donor = {...donor};

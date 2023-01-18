@@ -1,6 +1,6 @@
 <template lang="">
   <button
-    class="w-full border-primary border-2 text-sm font-medium rounded-3xl py-3.5 px-3 md:px-6"
+    class="w-full no-underline border-primary border-2 text-sm font-medium rounded-3xl py-3.5 px-3 md:px-6"
     :class="[
       active ? 'bg-primary text-primary-50' : 'bg-primary-100 text-primary',
     ]"
