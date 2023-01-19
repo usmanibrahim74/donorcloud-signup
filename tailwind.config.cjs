@@ -1,5 +1,6 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  presets: [require("@rise8/tailwind-pixel-perfect-preset")],
   // important: "#synergy-donation-tailwind",
   important: true,
   // prefix: 'tw-',
