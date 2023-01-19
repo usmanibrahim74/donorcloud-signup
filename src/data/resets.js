@@ -10,6 +10,7 @@ const donation = {
 }
 
 const donor = {
+    title: null,
     first_name: null,
     last_name: null,
     address_line_1: null,

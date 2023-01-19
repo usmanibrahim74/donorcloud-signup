@@ -1,6 +1,15 @@
 <template lang="">
   <form @submit.prevent="submit" class="flex flex-col gap-3">
     <h4 class="font-bold text-lg mb-2">Personal Information</h4>
+    <SelectBox
+      v-model="model.title"
+      :options="title"
+      placeholder="Title"
+      track-by="value"
+      label="name"
+      class="w-full z-10"
+      field="title"
+    />
     <div class="grid grid-cols-2 gap-3">
       <Input
         v-model="model.first_name"
@@ -93,6 +102,7 @@
 </template>
 <script>
 import countries from "@/data/countries.json";
+import title from "@/data/title.json";
 import SelectBox from "../components/SelectBox.vue";
 import Button from "../components/Button.vue";
 import Input from "../components/Input.vue";
@@ -162,6 +172,7 @@ export default {
       countries,
       submit,
       errors,
+      title
     };
   },
 };
