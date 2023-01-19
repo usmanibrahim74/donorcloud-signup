@@ -37,8 +37,8 @@ export default {
     });
 
     const del = (i) =>{
-      model.value.splice(i, 1)
-      if(!model.value.length){
+      model.value.donations.splice(i, 1)
+      if(!model.value.donations.length){
         addAnother();
       }
     }
