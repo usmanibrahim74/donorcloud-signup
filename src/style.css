@@ -1,6 +1,24 @@
 @tailwind base;
 @tailwind components;
 @tailwind utilities;
+
+
+
+:root{
+    --primary: #071c3d;
+    --primary-50: #eff9ff;
+    --primary-100: #e2f3ff;
+    --primary-200: #b8e6ff;
+    --primary-300: #79d2ff;
+    --primary-400: #32bcfe;
+    --primary-500: #338fff;
+    --primary-600: #1067ff;
+    --primary-700: #075dfb;
+    --primary-800: #094fca;
+    --primary-900: #071c3d;
+}
+
+
 /* Hide scrollbar for Chrome, Safari and Opera */
 .no-scrollbar::-webkit-scrollbar {
     display: none;
