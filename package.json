@@ -13,8 +13,7 @@
     "axios": "^1.2.1",
     "vue": "^3.2.45",
     "vue-currency-input": "^3.0.3",
-    "vue-final-modal": "^3.4.4",
-    "vuex": "^4.0.2"
+    "vue-final-modal": "^3.4.4"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

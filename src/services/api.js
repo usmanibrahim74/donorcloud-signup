@@ -1,27 +1,25 @@
 import axios from "axios";
 
-let accessToken = null;
-let clientId = null;
-
-if (document.getElementById("donationModal")) {
-  accessToken = document
-    .getElementById("donationModal")
-    .getAttribute("data-access-token");
-
-  clientId = document
-    .getElementById("donationModal")
-    .getAttribute("data-client-id");
+let accessToken = "5d8550b4140f1fd54685af696e4d6d45";
+const scriptElement = document.getElementById("synergi-donorcloud-script")
+if (scriptElement) {
+  accessToken = scriptElement.getAttribute("data-access-token");
 }
 
 // // Request interceptor
-// axios.interceptors.request.use((request) => {
-//   request.headers.common["X-Client-ID"] = clientId;
-//   request.headers.common["X-Token"] = accessToken;
-//   return request;
-// });
+axios.interceptors.request.use(
+  config => {
+    config.headers['X-Token'] = accessToken;
+        return config;
+    },
+    error => {
+        return Promise.reject(error);
+    }
+);
 
 const url = (api) => {
-  return "http://127.0.0.1:8000/api/modal/" + api;
+  
+  return window.SynergiApiURL + '/' + api;
 };
 export default {
   saveDonation(payload) {

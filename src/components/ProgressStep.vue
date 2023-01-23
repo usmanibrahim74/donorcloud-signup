@@ -1,13 +1,13 @@
 <template>
   <div class="w-full relative group" :class="[active ? '' : '']">
     <div
-      class="border-[5px] bg-white relative font-semibold z-10 rounded-full h-10 w-10 mx-auto flex items-center justify-center"
+      class="text-base border-[5px] bg-white relative font-semibold z-10 rounded-full h-10 w-10 mx-auto flex items-center justify-center"
       :class="[
         completed ? 'bg-primary border-primary' : '',
         active ? 'border-primary text-primary' : 'text-primary',
       ]"
     >
-      <template v-if="step >= current">
+      <template v-if="!completed">
         {{ step }}
       </template>
       <template v-else>
@@ -52,9 +52,15 @@ export default {
   },
   setup(props) {
     const active = computed(() => {
+      if(props.current == 4 &&  props.step == 3){
+        return true;
+      }
       return props.current == props.step;
     });
     const completed = computed(() => {
+      if(props.current == 4 &&  props.step == 3){
+        return false;
+      }
       return props.current > props.step;
     });
 

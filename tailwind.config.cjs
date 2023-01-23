@@ -1,5 +1,8 @@
+
+
 /** @type {import('tailwindcss').Config} */
 module.exports = {
+  presets: [require("./preset.js")],
   // important: "#synergy-donation-tailwind",
   important: true,
   // prefix: 'tw-',

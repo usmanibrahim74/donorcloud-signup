@@ -1,51 +1,58 @@
 <template lang="">
-  <form class="flex flex-col gap-4 mb-4" @submit.prevent="submit">
-    <div class="flex gap-2">
-      <Button
-        class="w-full"
-        @click="model.monthly = false"
-        :active="!model.monthly"
-        text="Single"
+  <div>
+    <form class="flex flex-col gap-4 mb-4" @submit.prevent="submit">
+      <div class="flex gap-2">
+        <Button
+          class="w-full"
+          @click="model.monthly = false"
+          :active="!model.monthly"
+          text="Single"
+        />
+        <Button
+          class="w-full"
+          @click="model.monthly = true"
+          :active="model.monthly"
+          text="Monthly"
+        />
+      </div>
+      <SelectBox
+        class="z-20"
+        label="title"
+        track-by="id"
+        v-model="project_id"
+        :options="projects"
+        placeholder="Select Project"
+        :error="errors.includes('project_id')"
+        field="project"
       />
-      <Button
-        class="w-full"
-        @click="model.monthly = true"
-        :active="model.monthly"
-        text="Monthly"
+      <SelectBox
+        class="z-10"
+        label="name"
+        track-by="id"
+        v-model="donation_type_id"
+        :options="donation_types"
+        placeholder="Select Donation Type"
+        :error="errors.includes('donation_type_id')"
+        field="donation type"
+        v-if="donation_types.length"
       />
-    </div>
-    <SelectBox
-      class="z-20"
-      label="title"
-      track-by="id"
-      v-model="project_id"
-      :options="projects"
-      placeholder="Select Project"
-      :error="errors.includes('project_id')"
-      field="project"
-    />
-    <SelectBox
-      class="z-10"
-      label="name"
-      track-by="id"
-      v-model="donation_type_id"
-      :options="donation_types"
-      placeholder="Select Donation Type"
-      :error="errors.includes('donation_type_id')"
-      field="donation type"
-      v-if="donation_types.length"
-    />
-    <Variations v-if="variations.length" v-model="model.amount" :variations="variations" />
-    <AmountBox
-      v-model="model.fixed_amount"
-      :error="errors.includes('amount')"
-      field="amount"
-      errorMessage="Please select or enter amount"
-    />
-    <div class="flex justify-center">
-      <Button type="submit" text="Add To Basket" active />
-    </div>
-  </form>
+      <Variations
+        v-if="variations.length"
+        v-model="model.amount"
+        :variations="variations"
+      />
+      <AmountBox
+        v-if="!model.amount"
+        v-model="model.fixed_amount"
+        :error="errors.includes('amount')"
+        field="amount"
+        errorMessage="Please select or enter amount"
+      />
+      <div class="flex justify-center">
+        <Button type="submit" text="Add To Basket" active />
+      </div>
+    </form>
+  </div>
 </template>
 <script>
 import { ref, reactive, computed } from "@vue/reactivity";
@@ -77,7 +84,7 @@ export default {
       get: () => props.modelValue,
       set: (value) => emit("update:modelValue", value),
     });
-    
+
     const project_id = computed({
       get: () => model.value.project_id,
       set: (value) => {
@@ -90,7 +97,9 @@ export default {
     const donation_type_id = computed({
       get: () => model.value.donation_type_id,
       set: (value) => {
-        model.value.donation_type = donation_types.value.find((p) => p.id == value);
+        model.value.donation_type = donation_types.value.find(
+          (p) => p.id == value
+        );
         model.value.donation_type_id = value;
       },
     });
@@ -98,12 +107,10 @@ export default {
     const donation_types = ref([]);
     const variations = ref([]);
     const getProject = async (id) => {
-      const { data } = await Api.fetchProject(id)
+      const { data } = await Api.fetchProject(id);
       donation_types.value = data.donation_types;
       variations.value = data.variations;
-
-    }
-
+    };
 
     const errors = ref([]);
     const validate = () => {
@@ -124,7 +131,6 @@ export default {
         emit("forward");
       }
     };
-
 
     return {
       project_id,
