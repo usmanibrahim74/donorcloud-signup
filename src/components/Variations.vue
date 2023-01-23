@@ -3,7 +3,7 @@
     <div class="flex gap-2 flex-col md:flex-row">
       <ButtonSelect class="w-full"
         v-for="v in variations"
-        @click="amount = v.amount"
+        @click="amount==v.amount? amount=0: amount=v.amount"
         :active="amount == v.amount"
         :text="`$${v.amount}`"
       />
@@ -70,10 +70,11 @@ export default {
       percent = percent + percent * 2 * index;
       return { "--position": percent + "%" };
     });
+
     return {
       amount,
       selectedVariationIndex,
-      arrowVar
+      arrowVar,
     
     };
   },

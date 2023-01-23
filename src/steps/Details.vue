@@ -1,95 +1,152 @@
 <template lang="">
-  <form @submit.prevent="submit" class="flex flex-col gap-3">
-    <h4 class="font-sans font-bold text-lg mb-2">Personal Information</h4>
-    <div class="grid grid-cols-2 gap-3">
+  <div>
+    <form @submit.prevent="submit" class="flex flex-col gap-3">
+      <h4 class="font-sans font-bold text-lg mb-2">Personal Information</h4>
+      <div class="grid grid-cols-2 gap-3">
+        <Input
+          v-model="model.first_name"
+          :error="errors.includes('first_name')"
+          field="first name"
+          placeholder="First Name"
+        />
+        <Input
+          v-model="model.last_name"
+          :error="errors.includes('last_name')"
+          field="last name"
+          placeholder="Last Name"
+        />
+      </div>
       <Input
-        v-model="model.first_name"
-        :error="errors.includes('first_name')"
-        field="first name"
-        placeholder="First Name"
+        v-model="model.address_line_1"
+        :error="errors.includes('address_line_1')"
+        field="address 1"
+        placeholder="Address 1"
       />
       <Input
-        v-model="model.last_name"
-        :error="errors.includes('last_name')"
-        field="last name"
-        placeholder="Last Name"
-      />
-    </div>
-    <Input
-      v-model="model.address_line_1"
-      :error="errors.includes('address_line_1')"
-      field="address 1"
-      placeholder="Address 1"
-    />
-    <Input
-      v-model="model.address_line_2"
-      :error="errors.includes('address_line_2')"
-      field="address 2"
-      placeholder="Address 2"
-    />
-    <Input
-      v-model="model.address_line_3"
-      :error="errors.includes('address_line_3')"
-      field="address 3"
-      placeholder="Address 3"
-    />
-    <div class="grid grid-cols-2 gap-3">
-      <Input
-        v-model="model.city"
-        :error="errors.includes('city')"
-        field="city"
-        placeholder="City"
+        v-model="model.address_line_2"
+        :error="errors.includes('address_line_2')"
+        field="address 2"
+        placeholder="Address 2"
       />
       <Input
-        v-model="model.post_code"
-        :error="errors.includes('post_code')"
-        field="post code"
-        placeholder="Post code"
+        v-model="model.address_line_3"
+        :error="errors.includes('address_line_3')"
+        field="address 3"
+        placeholder="Address 3"
       />
-    </div>
-    <SelectBox
-      v-model="model.country"
-      :options="countries"
-      placeholder="Country"
-      track-by="code"
-      label="name"
-      class="w-full z-10"
-      :error="errors.includes('country')"
-      field="country"
-    />
-    <Input
-      type="email"
-      :error="errors.includes('email')"
-      field="email"
-      v-model="model.email"
-      placeholder="Email Address"
-    />
-    <Input
-      v-model="model.phone"
-      :error="errors.includes('phone')"
-      field="phone number"
-      placeholder="Phone Number (Optional)"
-    />
-    <h4 class="font-sans font-bold text-lg mt-5 mb-2">Additional Information</h4>
-    <Input
-      v-model="model.reason"
-      :error="errors.includes('reason')"
-      field="reason"
-      placeholder="Reason For Donation (Optional)"
-    />
-    <Textarea
-      v-model="model.notes"
-      :error="errors.includes('notes')"
-      field="notes"
-      placeholder="Notes (Optional)"
-    />
-    <GiftAid v-model="model.gift_aid" :error="errors.includes('gift_aid')" />
-    <PaymentMethod v-model="model.payment_type" :hasMonthly="hasMonthly" />
-    <div class="flex items-center justify-center mt-8 gap-4">
-      <Button class="px-3" text="Back" @click="$emit('backward')" />
-      <Button type="submit" text="Proceed to payment" active />
-    </div>
-  </form>
+      <div class="grid grid-cols-2 gap-3">
+        <Input
+          v-model="model.city"
+          :error="errors.includes('city')"
+          field="city"
+          placeholder="City"
+        />
+        <Input
+          v-model="model.post_code"
+          :error="errors.includes('post_code')"
+          field="post code"
+          placeholder="Post code"
+        />
+      </div>
+      <SelectBox
+        v-model="model.country"
+        :options="countries"
+        placeholder="Country"
+        track-by="code"
+        label="name"
+        class="w-full z-10"
+        :error="errors.includes('country')"
+        field="country"
+      />
+      <Input
+        type="email"
+        :error="errors.includes('email')"
+        field="email"
+        v-model="model.email"
+        placeholder="Email Address"
+      />
+      <Input
+        v-model="model.phone"
+        :error="errors.includes('phone')"
+        field="phone number"
+        placeholder="Phone Number (Optional)"
+      />
+      <h4 class="font-sans font-bold text-lg mt-5 mb-2">
+        Additional Information
+      </h4>
+      <Input
+        v-model="model.reason"
+        :error="errors.includes('reason')"
+        field="reason"
+        placeholder="Reason For Donation (Optional)"
+      />
+      <Textarea
+        v-model="model.notes"
+        :error="errors.includes('notes')"
+        field="notes"
+        placeholder="Notes (Optional)"
+      />
+      <GiftAid v-model="model.gift_aid" :error="errors.includes('gift_aid')" />
+
+      <div>
+        <h4 class="font-sans font-bold text-lg mt-5 mb-2">
+          How would you like to be contacted?
+        </h4>
+        <div class="flex gap-3">
+          <label>
+            <input
+              type="radio"
+              v-model="model.contact_me_through"
+              name="contact_me_through"
+              value="email"
+            />
+            Email
+          </label>
+          <label>
+            <input
+              type="radio"
+              v-model="model.contact_me_through"
+              name="contact_me_through"
+              value="email"
+            />
+            Phone
+          </label>
+          <label>
+            <input
+              type="radio"
+              v-model="model.contact_me_through"
+              name="contact_me_through"
+              value="email"
+            />
+            Email
+          </label>
+          <label>
+            <input
+              type="radio"
+              v-model="model.contact_me_through"
+              name="contact_me_through"
+              value="email"
+            />
+            Email
+          </label>
+        </div>
+      </div>
+      <PaymentMethod v-model="model.payment_type" :hasMonthly="hasMonthly" />
+      <label class="flex gap-2 mt-4">
+        <input
+          type="checkbox"
+          v-model="model.contact_me_through"
+          name="contact_me_through"
+          value="email"
+        />
+        I agree to the terms and conditions
+      </label>
+      <div class="flex items-center justify-center mt-8 gap-4">
+        <Button class="px-3" text="Back" @click="$emit('backward')" />
+        <Button type="submit" text="Proceed to payment" active />
+      </div>
+    </form>
+  </div>
 </template>
 <script>
 import countries from "@/data/countries.json";
