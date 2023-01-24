@@ -29,6 +29,7 @@ const donor = {
     paper_copy: false,
     admin_fee_cover: false,
     contact_me_through: null,
+    agree: 0
 }
 
 const admin_fee = {

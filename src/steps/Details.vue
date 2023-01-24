@@ -1,5 +1,7 @@
 <template lang="">
   <div>
+    {{ errors }}
+    {{ model }}
     <form @submit.prevent="submit" class="flex flex-col gap-3">
       <h4 class="font-sans font-bold text-lg mb-2">Personal Information</h4>
       <div class="grid grid-cols-3 gap-3">
@@ -107,7 +109,7 @@
               type="radio"
               v-model="model.contact_me_through"
               name="contact_me_through"
-              value="email"
+              value="Email"
             />
             Email
           </label>
@@ -116,40 +118,52 @@
               type="radio"
               v-model="model.contact_me_through"
               name="contact_me_through"
-              value="email"
+              value="Call"
             />
-            Phone
+            Call
           </label>
           <label>
             <input
               type="radio"
               v-model="model.contact_me_through"
               name="contact_me_through"
-              value="email"
+              value="Message"
             />
-            Email
+            Message
           </label>
           <label>
             <input
               type="radio"
               v-model="model.contact_me_through"
               name="contact_me_through"
-              value="email"
+              value="Fax"
             />
-            Email
+            Fax
           </label>
         </div>
+        <HasError
+          class="ml-5 mt-1"
+          v-if="contactMeError && !model.contact_me_through"
+          message="At least one is required"
+        />
       </div>
       <PaymentMethod v-model="model.payment_type" :hasMonthly="hasMonthly" />
-      <label class="flex gap-2 mt-4">
-        <input
-          type="checkbox"
-          v-model="model.contact_me_through"
-          name="contact_me_through"
-          value="email"
+      <div>
+        <label class="flex gap-2 mt-4">
+          <input
+            v-model="model.agree"
+            type="checkbox"
+            name="agree"
+            field="agree"
+          />
+          I agree to the terms and conditions
+        </label>
+        <HasError
+          v-if="agreeError && !model.agree"
+          class="ml-5"
+          message="Please agree to the terms and conditions."
         />
-        I agree to the terms and conditions
-      </label>
+      </div>
       <div class="flex items-center justify-center mt-8 gap-4">
         <Button class="px-3" text="Back" @click="$emit('backward')" />
         <Button type="submit" text="Proceed to payment" active />
@@ -167,6 +181,8 @@ import Textarea from "../components/Textarea.vue";
 import GiftAid from "../components/GiftAid.vue";
 import PaymentMethod from "../components/PaymentMethod.vue";
 import { ref, computed } from "@vue/reactivity";
+import HasError from "../components/HasError.vue";
+
 export default {
   components: {
     Button,
@@ -175,6 +191,7 @@ export default {
     Textarea,
     GiftAid,
     PaymentMethod,
+    HasError,
   },
   props: {
     modelValue: {
@@ -192,7 +209,16 @@ export default {
       set: (value) => emit("update:modelValue", value),
     });
 
+    const contactMeError = ref(false);
+    const agreeError = ref(false);
+
     const submit = () => {
+      if (model.contact_me_through == null) {
+        contactMeError.value = true;
+      }
+      if (!model.agree) {
+        agreeError.value = true;
+      }
       if (validate()) {
         emit("forward", model);
       }
@@ -215,6 +241,8 @@ export default {
         // "notes",
         // 'gift_aid',
         "payment_method",
+        "agree",
+        "contact_me_through",
       ];
       const form = model.value;
       errors.value = required.filter((r) => {
@@ -230,6 +258,8 @@ export default {
       submit,
       errors,
       title,
+      contactMeError,
+      agreeError,
     };
   },
 };
