@@ -7,7 +7,7 @@
           error ? 'bg-red-50 border-red-300' : 'bg-primary-100 border-primary',
         ]"
       >
-        <span v-if="model" class="block truncate">
+        <span v-if="model && labelText" class="block truncate">
           {{ labelText }}
         </span>
         <span v-else class="text-gray-500 block truncate">

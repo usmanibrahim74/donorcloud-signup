@@ -201,7 +201,7 @@ export default {
               v-model="donationForm"
               :projects="projects"
               v-show="step == 1"
-              @forward.once="stepOneCompleted"
+              @forward="stepOneCompleted"
             />
             <BasketStep
               v-model="state"

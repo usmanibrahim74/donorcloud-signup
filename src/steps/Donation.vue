@@ -34,7 +34,6 @@
         placeholder="Select Donation Type"
         :error="errors.includes('donation_type_id')"
         field="donation type"
-        v-if="donation_types.length"
       />
       <Variations
         v-if="variations.length"
@@ -85,12 +84,28 @@ export default {
       set: (value) => emit("update:modelValue", value),
     });
 
+    const donation_types = computed(() => {
+      if(model.value.project?.donation_types){
+        return model.value.project?.donation_types;
+      }
+      return [];
+    });
+    const variations = computed(() => {
+      if(model.value.project?.variations){
+        return model.value.project?.variations;
+      }
+      return [];
+    });
     const project_id = computed({
       get: () => model.value.project_id,
       set: (value) => {
-        model.value.project = props.projects.find((p) => p.id == value);
+        const project = props.projects.find((p) => p.id == value);
+        variations.value = project.variations;
+        donation_types.value = project.donation_types;
+        model.value.project = project;
         model.value.project_id = value;
-        getProject(value);
+        model.value.donation_type_id = null;
+        model.value.amount = null;
       },
     });
 
@@ -104,14 +119,6 @@ export default {
       },
     });
 
-    const donation_types = ref([]);
-    const variations = ref([]);
-    const getProject = async (id) => {
-      const { data } = await Api.fetchProject(id);
-      donation_types.value = data.donation_types;
-      variations.value = data.variations;
-    };
-
     const errors = ref([]);
     const validate = () => {
       const required = ["donation_type_id", "project_id", "amount"];
@@ -123,6 +130,7 @@ export default {
         const hasError = [null, 0, ""].includes(form[r]);
         return hasError;
       });
+      console.log(errors.value);
       return !errors.value.length;
     };
 

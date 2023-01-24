@@ -1,10 +1,8 @@
 <template lang="">
   <div>
-    {{ errors }}
-    {{ model }}
     <form @submit.prevent="submit" class="flex flex-col gap-3">
       <h4 class="font-sans font-bold text-lg mb-2">Personal Information</h4>
-      <div class="grid grid-cols-3 gap-3">
+      <div class="grid grid-cols-3 gap-3 items-start">
         <SelectBox
           v-model="model.title"
           :options="title"
@@ -13,6 +11,7 @@
           label="name"
           class="w-full z-10"
           field="title"
+          :error="errors.includes('title')"
         />
         <Input
           v-model="model.first_name"
@@ -104,46 +103,18 @@
           How would you like to be contacted?
         </h4>
         <div class="flex gap-3">
-          <label>
+          <label v-for="i in contact" :key="i">
             <input
               type="radio"
               v-model="model.contact_me_through"
               name="contact_me_through"
-              value="Email"
+              :value="i"
             />
-            Email
-          </label>
-          <label>
-            <input
-              type="radio"
-              v-model="model.contact_me_through"
-              name="contact_me_through"
-              value="Call"
-            />
-            Call
-          </label>
-          <label>
-            <input
-              type="radio"
-              v-model="model.contact_me_through"
-              name="contact_me_through"
-              value="Message"
-            />
-            Message
-          </label>
-          <label>
-            <input
-              type="radio"
-              v-model="model.contact_me_through"
-              name="contact_me_through"
-              value="Fax"
-            />
-            Fax
+            {{ i }}
           </label>
         </div>
         <HasError
-          class="ml-5 mt-1"
-          v-if="contactMeError && !model.contact_me_through"
+          v-if="errors.includes('contact_me_through')"
           message="At least one is required"
         />
       </div>
@@ -159,8 +130,7 @@
           I agree to the terms and conditions
         </label>
         <HasError
-          v-if="agreeError && !model.agree"
-          class="ml-5"
+          v-if="errors.includes('agree')"
           message="Please agree to the terms and conditions."
         />
       </div>
@@ -213,12 +183,6 @@ export default {
     const agreeError = ref(false);
 
     const submit = () => {
-      if (model.contact_me_through == null) {
-        contactMeError.value = true;
-      }
-      if (!model.agree) {
-        agreeError.value = true;
-      }
       if (validate()) {
         emit("forward", model);
       }
@@ -227,6 +191,7 @@ export default {
     const errors = ref([]);
     const validate = () => {
       const required = [
+        "title",
         "first_name",
         "last_name",
         "address_line_1",
@@ -245,8 +210,9 @@ export default {
         "contact_me_through",
       ];
       const form = model.value;
+      // console.log(form);
       errors.value = required.filter((r) => {
-        const hasError = [null, 0, ""].includes(form[r]);
+        const hasError = [null, 0, "", false].includes(form[r]);
         return hasError;
       });
       return !errors.value.length;
@@ -260,6 +226,7 @@ export default {
       title,
       contactMeError,
       agreeError,
+      contact: ["Email", "Call", "Message", "Fax"],
     };
   },
 };
