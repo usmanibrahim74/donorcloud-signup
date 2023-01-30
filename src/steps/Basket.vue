@@ -13,7 +13,7 @@
       >
         Further Support Us
       </p>
-      <div class="flex gap-4 text-center mb-5">
+      <!-- <div class="flex gap-4 text-center mb-5">
         <SupportFee
           text="Admin Fee"
           amount="$3.00"
@@ -26,7 +26,7 @@
           :active="model.paper_fee"
           @click="model.paper_fee = !model.paper_fee"
         />
-      </div>
+      </div> -->
 
       <div class="flex gap-2">
         <Button

@@ -29,6 +29,7 @@
           class="absolute mt-1 max-h-60 w-full overflow-auto rounded-md bg-white py-1 text-base shadow-lg ring-1 ring-black ring-opacity-5 focus:outline-none sm:text-sm"
         >
           <ListboxOption
+            v-if="options.length"
             v-slot="{ active, selected }"
             v-for="(option, i) in options"
             :key="i"
@@ -36,9 +37,9 @@
             as="template"
           >
             <li
+              class="relative cursor-pointer py-2 pl-10 pr-4 m-0"
               :class="[
                 active ? 'bg-primary-100 text-primary' : 'text-gray-900',
-                'relative cursor-default select-none py-2 pl-10 pr-4 m-0',
               ]"
             >
               <span
@@ -56,6 +57,12 @@
               </span>
             </li>
           </ListboxOption>
+
+          <ListboxOption v-else disabled>
+            <li class="relative py-2 pl-10 pr-4 m-0 text-gray-400">
+              No {{ field }} found
+            </li>
+          </ListboxOption>
         </ListboxOptions>
       </transition>
       <HasError class="ml-5 mt-1" v-if="error" :message="message" />
@@ -65,7 +72,6 @@
 <script>
 import {
   Listbox,
-  ListboxLabel,
   ListboxButton,
   ListboxOptions,
   ListboxOption,
@@ -76,7 +82,6 @@ import { ref, reactive, computed } from "@vue/reactivity";
 export default {
   components: {
     Listbox,
-    ListboxLabel,
     ListboxButton,
     ListboxOptions,
     ListboxOption,

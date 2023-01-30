@@ -1,6 +1,6 @@
 <template>
   <div>
-    <Loader v-if="loading"  message="Please Wait..." />
+    <Loader v-if="loading" message="Please Wait..." />
     <form>
       <div class="stripe mb-3">
         <div>
@@ -80,7 +80,7 @@ import HasError from "./HasError.vue";
 import Loader from "./Loader.vue";
 
 export default {
-  props: ["amount", "customer", "stripePublicKey"],
+  props: ["amount", "customer", "publicKey", "loading"],
   components: {
     Button,
     HasError,
@@ -118,7 +118,6 @@ export default {
       },
       errors: [],
 
-      loading: false,
       url: import.meta.env.VITE_WEB_URL,
     };
   },
@@ -133,7 +132,7 @@ export default {
       this.$emit("backward");
     },
     setUpStripe() {
-      const stripe = Stripe(this.stripePublicKey);
+      const stripe = Stripe(this.publicKey);
       this.stripe = stripe;
 
       const elements = stripe.elements();
@@ -171,7 +170,7 @@ export default {
 
     submit() {
       if (this.validate()) {
-        this.loading = true;
+        this.$emit("startLoading");
         this.stripe
           .createToken(this.elements.number, {
             name: this.customer.email,
@@ -182,6 +181,7 @@ export default {
           .then(async (result) => {
             if (result.error) {
               this.messages.stripe = result.error.message;
+              this.$emit('error',result.error.message)
             } else {
               this.$emit("forward", result.token.id);
             }

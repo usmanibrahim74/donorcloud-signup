@@ -18,11 +18,12 @@
 import HasError from "./HasError.vue";
 import CurrencyInput from "./CurrencyInput.vue";
 import { computed } from "@vue/reactivity";
+import {useCurrency} from "@/use/useCurrency";
 
 export default {
   props: {
     modelValue: {
-      
+
       required: true,
     },
     error: {
@@ -49,8 +50,8 @@ export default {
     });
 
     const message = props.errorMessage.replace(":field", props.field).trim();
-
-    const options = { currency: "USD" };
+    const { currency_code } = useCurrency();
+    const options = { currency:  currency_code};
     return {
       options,
       model,

@@ -1,7 +1,7 @@
 <template lang="">
   <div class="mt-2 p-6 border border-black rounded-3xl">
     <div>
-      <img class="float-right max-w-[14rem]" :src="$getAsset('/sign.png')" />
+      <img class="float-right max-w-[14rem]" :src="getAsset('/sign.png')" />
       <h2 class="font-sans font-bold text-lg">
         Increase the value of your fundraiser donation by 25%
       </h2>
@@ -25,6 +25,8 @@
   </div>
 </template>
 <script>
+
+import { useAsset } from "@/use/useAsset";
 import { computed } from "@vue/reactivity";
 import HasError from "./HasError.vue";
 export default {
@@ -46,8 +48,11 @@ export default {
       set: (value) => emit("update:modelValue", value),
     });
 
+    const { getAsset } =useAsset();
+
     return {
       model,
+      getAsset
     };
   },
 };

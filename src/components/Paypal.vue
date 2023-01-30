@@ -1,101 +1,108 @@
 <template>
   <div>
-    <div ref="paypal"></div>
+    <Loader v-if="loading" class="z-20" message="Please Wait..." />
+    <div class="relative z-10" ref="paypal"></div>
     <div class="flex items-center justify-center mt-8 gap-4">
-          <Button @click="moveBack" text="Back" />
+      <Button @click="$emit('backward')" text="Back" />
     </div>
   </div>
 </template>
 <script>
-
 import Button from "./Button.vue";
+import Loader from "./Loader.vue";
+import { useCurrency } from "@/use/useCurrency";
+import { ref, reactive } from "@vue/reactivity";
+import { onMounted } from "vue";
 export default {
   components: {
-    Button
+    Button,
+    Loader,
   },
-  props:{
+  props: {
     donations: {
       type: Array,
-      default:null
+      default: null,
     },
-    projects:{
+    projects: {
       type: Array,
-      default: []
-    }
+      default: [],
+    },
+    loading: {
+      type: Boolean,
+      default: false,
+    },
+    clientId: {
+      type: String,
+      default: null,
+    },
   },
-  data() {
-    return {
-      loaded: false,
-      paidFor: false,
-      product: {
-        price: 20.00,
-        description: "leg lamp from that one movie",
-        img: "./assets/lamp.jpg",
-      },
-      purchase_units:[],
-      // totalAmount: null
+  setup(props, { emit }) {
+    const { currency_code } = useCurrency();
+
+    const getReferenceId = (id, index) => {
+      const reference = props.projects.find((p) => p.id == id);
+      return index + "_" + reference.tenant_id;
     };
-  },
-  mounted() {
-    this.makeDonationProduct()
-    const link =
-      "https://www.paypal.com/sdk/js?client-id=AQYuvSdIb53kUFXZOgLWx2Ec6LlLHYy_WAUSXq94gSjMoCC5I-tA93u1Dsy3bgZmLfwt_gyogUMIqPsi&disable-funding=credit,card";
-    const script = document.createElement("script");
-    script.src = link;
-    script.addEventListener("load", this.setupPaypal);
-    document.body.appendChild(script);
-  },
-  methods: {
-    moveBack() {
-      this.$emit("backward");
-    },
-    makeDonationProduct(){
-      this.purchase_units = []
-      this.donations.map((donation,index) => {
-        this.purchase_units.push({
-          reference_id: this.getReferenceId(donation.project_id,index),
-          description: this.projectName(donation.project_id),
-          amount: {
-            currency_code: "USD",
-            value: donation.fixed_amount ?? donation.amount ?? 0
-          }
-        })  
-      })
-      
-    },
-    getReferenceId(id,index){
-      let reference = this.projects.find((p) => p.id == id);
-      return index + '_' + reference.tenant_id;
-    },
-    projectName(id) {
-      let project = this.projects.find((f) => {
+    const projectName = (id) => {
+      const project = props.projects.find((f) => {
         return f.id == id;
       });
       return project.title;
-    },
-    setupPaypal() {
-      this.loaded = true;
+    };
+
+    const makeDonationProduct = () => {
+      purchase_units.value = [];
+      props.donations.map((donation, index) => {
+        purchase_units.value.push({
+          reference_id: getReferenceId(donation.project_id, index),
+          description: projectName(donation.project_id),
+          amount: {
+            currency_code,
+            value: donation.fixed_amount ?? donation.amount ?? 0,
+          },
+        });
+      });
+    };
+
+    const addPaypalScript = () => {
+      const link = `https://www.paypal.com/sdk/js?client-id=${props.clientId}&disable-funding=credit,card&currency=${currency_code}`;
+      const script = document.createElement("script");
+      script.src = link;
+      script.addEventListener("load", setupPaypal);
+      document.body.appendChild(script);
+    };
+
+    const paypal = ref(null);
+
+    const purchase_units = ref([]);
+    const setupPaypal = () => {
       window.paypal
         .Buttons({
           createOrder: (data, actions) => {
+            emit("startLoading");
             return actions.order.create({
-              purchase_units: this.purchase_units
+              purchase_units: purchase_units.value,
             });
           },
           onApprove: async (data, actions) => {
             const order = await actions.order.capture();
-            this.$emit('forward', order)
-            this.paidFor = true;
-            console.log(order);
-
+            emit("forward", order);
           },
           onError: (err) => {
-              this.$emit('error', err)
-            console.log(err);
+            emit("error", err);
+            console.error(err);
           },
         })
-        .render(this.$refs.paypal);
-    },
+        .render(paypal.value);
+    };
+
+    onMounted(() => {
+      makeDonationProduct();
+      addPaypalScript();
+    });
+    return {
+      paypal,
+    };
   },
 };
 </script>

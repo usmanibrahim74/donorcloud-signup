@@ -12,11 +12,11 @@ import Stripe from "./components/Stripe.vue";
 import Paypal from "./components/Paypal.vue";
 import ThankyouStep from "./steps/Thankyou.vue";
 import ProgressStep from "./components/ProgressStep.vue";
-import Header from "./components/Header.vue";
 import Footer from "./components/Footer.vue";
 import Title from "./components/Title.vue";
 import Total from "./components/Total.vue";
 import Button from "./components/Button.vue";
+import { XCircleIcon } from "@heroicons/vue/20/solid";
 
 export default {
   name: "DonorCloud",
@@ -29,11 +29,11 @@ export default {
     ThankyouStep,
     ProgressStep,
     Paypal,
-    Header,
     Footer,
     Title,
     Total,
     Button,
+    XCircleIcon,
   },
   setup() {
     const donationForm = ref({ ...donation });
@@ -70,11 +70,13 @@ export default {
       projects.value = data.data;
     };
 
-    const gatewayKey = ref(null);
-    const fetchGatewayKey = async () => {
-      let gateWay = "stripe";
-      const { data } = await Api.fetchGatewayKey(gateWay);
-      gatewayKey.value = data.data.public_key;
+    const gatewayKeys = reactive({
+      stripe: null,
+      paypal: null,
+    });
+    const fetchGatewayKey = async (gateway) => {
+      const { data } = await Api.fetchGatewayKey(gateway);
+      gatewayKeys[gateway] = data.data.public_key;
     };
 
     const add = () => {
@@ -94,10 +96,6 @@ export default {
       paymentType.value = model.value.payment_type;
       step.value = 4;
     };
-
-    const hasMonthly = computed(() => {
-      return state.donations.some((d) => d.monthly);
-    });
 
     const monthlyDonations = computed(() => {
       return state.donations.filter((d) => d.monthly);
@@ -127,6 +125,7 @@ export default {
 
     const saveDonation = async () => {
       await Api.saveDonation(state);
+      loading.value = false;
       step.value = 5;
     };
 
@@ -139,16 +138,19 @@ export default {
       }
     };
 
+    const loading = ref(false);
+
     onMounted(() => {
       fetchProjects();
-      fetchGatewayKey();
+      fetchGatewayKey("stripe");
+      fetchGatewayKey("paypal");
     });
     return {
       donationForm,
       open,
       step,
       state,
-      gatewayKey,
+      gatewayKeys,
       stepOneCompleted,
       stepTwoCompleted,
       edit,
@@ -157,12 +159,12 @@ export default {
       donate,
       paymentTypeStep,
       paymentType,
-      hasMonthly,
       total_onetime,
       total_monthly,
       oneTimeDonations,
       monthlyDonations,
       handleClosed,
+      loading,
     };
   },
 };
@@ -178,14 +180,19 @@ export default {
     v-slot="{ close }"
     overlay-class=""
     classes="flex items-center justify-center px-5"
-    content-class="w-full max-w-[1400px] max-h-[calc(100vh_-_20px)] overflow-auto rounded-3xl no-scrollbar"
+    content-class="w-full max-w-[1400px] h-[calc(100vh_-_20px)] overflow-hidden rounded-3xl"
     v-model="open"
     @closed="handleClosed"
   >
-    <div class="flex flex-col bg-white">
-      <Header @close="close" />
+    <div class="flex flex-col bg-white relative h-full">
+      <div
+        @click="close"
+        class="z-10 cursor-pointer absolute right-0 top-0 rounded-full opacity-80 text-gray-800 h-16 w-16"
+      >
+        <XCircleIcon />
+      </div>
       <!-- overflow-auto max-h-[calc(100vh_-_128px)] -->
-      <main class="relative flex flex-col flex-1 justify-between">
+      <main class="relative flex flex-col flex-1 justify-between overflow-auto h-full mb-[8rem] no-scrollbar">
         <div class="max-w-[900px] mx-auto px-4">
           <Title />
           <div class="flex items-center max-w-[700px] mx-auto my-4">
@@ -213,24 +220,36 @@ export default {
             <DetailsStep
               v-model="state.donor"
               v-show="step == 3"
-              :hasMonthly="hasMonthly"
+              :hasMonthly="monthlyDonations.length > 0"
               @backward="step = 2"
               @forward="paymentTypeStep"
             />
             <Stripe
-              v-if="gatewayKey"
+              v-if="gatewayKeys.stripe"
               :customer="state.donor"
-              :stripePublicKey="gatewayKey"
+              :public-key="gatewayKeys.stripe"
               v-show="step == 4 && paymentType == 'credit'"
               @backward="step = 3"
               @forward="donate"
+              :loading="loading"
+              @start-loading="loading = true"
+              @error="loading = false"
             />
             <Paypal
+              :client-id="gatewayKeys.paypal"
+              :loading="loading"
               :donations="oneTimeDonations"
               :projects="projects"
-              v-if="step == 4 && paymentType == 'paypal' && !hasMonthly"
+              v-if="
+                gatewayKeys.paypal &&
+                step == 4 &&
+                paymentType == 'paypal' &&
+                monthlyDonations.length == 0
+              "
               @backward="step = 3"
               @forward="donate"
+              @start-loading="loading = true"
+              @error="loading = false"
             />
             <ThankyouStep v-if="step == 5" />
 

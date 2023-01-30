@@ -105,16 +105,16 @@
         <div class="flex gap-3">
           <label v-for="i in contact" :key="i">
             <input
-              type="radio"
-              v-model="model.contact_me_through"
-              name="contact_me_through"
+              type="checkbox"
+              v-model="model.contact_preference"
+              name="contact_preference"
               :value="i"
             />
             {{ i }}
           </label>
         </div>
         <HasError
-          v-if="errors.includes('contact_me_through')"
+          v-if="errors.includes('contact_preference')"
           message="At least one is required"
         />
       </div>
@@ -207,10 +207,9 @@ export default {
         // 'gift_aid',
         "payment_method",
         "agree",
-        "contact_me_through",
+        "contact_preference",
       ];
       const form = model.value;
-      // console.log(form);
       errors.value = required.filter((r) => {
         const hasError = [null, 0, "", false].includes(form[r]);
         return hasError;
@@ -226,7 +225,7 @@ export default {
       title,
       contactMeError,
       agreeError,
-      contact: ["Email", "Call", "Message", "Fax"],
+      contact: ["Email", "Phone", "SMS", "Post"],
     };
   },
 };

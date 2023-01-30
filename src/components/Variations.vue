@@ -1,11 +1,12 @@
 <template lang="">
   <div>
     <div class="flex gap-2 flex-col md:flex-row">
-      <ButtonSelect class="w-full"
+      <ButtonSelect
+        class="w-full"
         v-for="v in variations"
-        @click="amount==v.amount? amount=0: amount=v.amount"
+        @click="amount == v.amount ? (amount = 0) : (amount = v.amount)"
         :active="amount == v.amount"
-        :text="`$${v.amount}`"
+        :text="formatAmount(v.amount)"
       />
     </div>
     <div
@@ -21,7 +22,8 @@
 </template>
 <script>
 import { computed } from "@vue/reactivity";
-import ButtonSelect from './Button.vue';
+import ButtonSelect from "./Button.vue";
+import { useCurrency } from "@/use/useCurrency";
 export default {
   props: {
     modelValue: {
@@ -34,8 +36,8 @@ export default {
       },
     },
   },
-  components:{
-      ButtonSelect,
+  components: {
+    ButtonSelect,
   },
   setup(props, { emit }) {
     const amount = computed({
@@ -71,11 +73,12 @@ export default {
       return { "--position": percent + "%" };
     });
 
+    const { formatAmount } = useCurrency();
     return {
       amount,
       selectedVariationIndex,
       arrowVar,
-    
+      formatAmount,
     };
   },
 };
@@ -83,10 +86,9 @@ export default {
 
 <style>
 .arrow-up {
-
   @apply before:content-[''] before:absolute before:top-0 before:-translate-y-full before:border-8 before:border-transparent before:border-b-primary-100;
 }
-.arrow-up::before{
+.arrow-up::before {
   left: calc(var(--position) - 16px);
 }
 </style>

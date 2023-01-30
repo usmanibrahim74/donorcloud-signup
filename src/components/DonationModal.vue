@@ -199,10 +199,8 @@ export default {
         }
       });
 
-      console.log("current donation" ,this.current_donation)
     },
     trigger(element_id) {
-      console.log(element_id)
       var event = document.createEvent("Event");
       event.initEvent("change", false, true); 
       document.getElementById(element_id).dispatchEvent(event);

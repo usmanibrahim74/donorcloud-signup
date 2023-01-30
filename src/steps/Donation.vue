@@ -38,6 +38,7 @@
       <Variations
         v-if="variations.length"
         v-model="model.amount"
+        @update:modelValue="model.fixed_amount = null"
         :variations="variations"
       />
       <AmountBox
@@ -130,7 +131,6 @@ export default {
         const hasError = [null, 0, ""].includes(form[r]);
         return hasError;
       });
-      console.log(errors.value);
       return !errors.value.length;
     };
 

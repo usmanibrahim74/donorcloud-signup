@@ -5,35 +5,63 @@
         <div class="flex-1 py-6 px-4 sm:px-6">
           <div class="flex items-start justify-between my-4">
             <div class="">
-              <h2 class="text-2xl font-bold text-gray-900 w-full" id="slide-over-title">
+              <h2
+                class="text-2xl font-bold text-gray-900 w-full"
+                id="slide-over-title"
+              >
                 Your Donation
               </h2>
-              <p>See the details of your donation below:</p> 
+              <p>See the details of your donation below:</p>
             </div>
-            <div class="ml-3 flex h-7 items-center">
-             
-            </div>
+            <div class="ml-3 flex h-7 items-center"></div>
           </div>
-          <hr>
+          <hr />
           <div class="mt-8">
             <div class="flow-root">
               <ul role="list" class="" v-if="donations.length">
-                <template v-for="(donation,index) in donations"  :key="'donation_' + index">
-                  <li 
+                <template
+                  v-for="(donation, index) in donations"
+                  :key="'donation_' + index"
+                >
+                  <li
                     v-if="donation.project"
-                    class="flex py-4 px-2 !border-2 !border-green mb-2 bg-white">
+                    class="flex py-4 px-2 !border-2 !border-green mb-2 bg-white"
+                  >
                     <div class="flex flex-1 flex-col">
                       <div>
                         <div
                           class="flex justify-between text-base font-bold text-gray-900"
                         >
-                          <h3 class="text-green text-lg">{{ donation.project.title }}</h3>
-                          <p class="ml-4 text-lg">{{ $formatAmount((donation.amount) ? donation.amount : donation.fix_amount) }}</p>
+                          <h3 class="text-green text-lg">
+                            {{ donation.project.title }}
+                          </h3>
+                          <p class="ml-4 text-lg">
+                            {{
+                              formatAmount(
+                                donation.amount
+                                  ? donation.amount
+                                  : donation.fix_amount
+                              )
+                            }}
+                          </p>
                         </div>
-                        <p class="mt-1 text-sm text-gray-700">{{ donationType(donation.project,donation.donation_type_id) }}</p>
+                        <p class="mt-1 text-sm text-gray-700">
+                          {{
+                            donationType(
+                              donation.project,
+                              donation.donation_type_id
+                            )
+                          }}
+                        </p>
                       </div>
-                      <div class="flex flex-1 items-end justify-between text-sm">
-                        <p class="text-gray-700">{{ (donation.monthly) ? "Monthly Donation" : "One-Off" }}</p>
+                      <div
+                        class="flex flex-1 items-end justify-between text-sm"
+                      >
+                        <p class="text-gray-700">
+                          {{
+                            donation.monthly ? "Monthly Donation" : "One-Off"
+                          }}
+                        </p>
                         <div class="flex">
                           <!-- <button
                             type="button"
@@ -48,9 +76,20 @@
                             type="button"
                             class="font-medium text-red border-none p-0"
                           >
-                          <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-6 h-6">
-                            <path stroke-linecap="round" stroke-linejoin="round" d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0" />
-                          </svg>
+                            <svg
+                              xmlns="http://www.w3.org/2000/svg"
+                              fill="none"
+                              viewBox="0 0 24 24"
+                              stroke-width="1.5"
+                              stroke="currentColor"
+                              class="w-6 h-6"
+                            >
+                              <path
+                                stroke-linecap="round"
+                                stroke-linejoin="round"
+                                d="M14.74 9l-.346 9m-4.788 0L9.26 9m9.968-3.21c.342.052.682.107 1.022.166m-1.022-.165L18.16 19.673a2.25 2.25 0 01-2.244 2.077H8.084a2.25 2.25 0 01-2.244-2.077L4.772 5.79m14.456 0a48.108 48.108 0 00-3.478-.397m-12 .562c.34-.059.68-.114 1.022-.165m0 0a48.11 48.11 0 013.478-.397m7.5 0v-.916c0-1.18-.91-2.164-2.09-2.201a51.964 51.964 0 00-3.32 0c-1.18.037-2.09 1.022-2.09 2.201v.916m7.5 0a48.667 48.667 0 00-7.5 0"
+                              />
+                            </svg>
                           </button>
                         </div>
                       </div>
@@ -58,96 +97,203 @@
                   </li>
                 </template>
               </ul>
-              <div v-else>
-                Basket Is Empty
-              </div>
+              <div v-else>Basket Is Empty</div>
             </div>
           </div>
         </div>
         <div class="mb-4 px-4 sm:px-6">
           <ul class="flex gap-2">
-            <li class="relative w-1/2 flex flex-col justify-center items-center !border-2 !border-green p-4 bg-white">
-              <h2 class="font-bold text-lg text-green mb-1">Paper copy of reciept</h2>
-              <input type="hidden" :value="paper_copy_amount">
+            <li
+              class="relative w-1/2 flex flex-col justify-center items-center !border-2 !border-green p-4 bg-white"
+            >
+              <h2 class="font-bold text-lg text-green mb-1">
+                Paper copy of reciept
+              </h2>
+              <input type="hidden" :value="paper_copy_amount" />
               <p class="font-bold text-lg mb-1">£{{ paper_copy_amount }}</p>
-              <input class="sr-only peer" type="checkbox" v-model="isSelectedPaperCopy" id="admin_fee_cover" @change="addCustomProject('paper_copy')">
-              <label for="admin_fee_cover" 
+              <input
+                class="sr-only peer"
+                type="checkbox"
+                v-model="isSelectedPaperCopy"
+                id="admin_fee_cover"
+                @change="addCustomProject('paper_copy')"
+              />
+              <label
+                for="admin_fee_cover"
                 :class="{
                   'bg-red': isSelectedPaperCopy,
-                  'bg-gray-400': !isSelectedPaperCopy
+                  'bg-gray-400': !isSelectedPaperCopy,
                 }"
-                class="px-6 pt-2.5 pb-2 bg-red text-white font-medium text-xs leading-normal uppercase rounded shadow-md transition duration-300 ease-in-out flex align-center items-center peer-checked:ring-green peer-checked:ring-2 peer-checked:border-transparent">
-                {{ (isSelectedPaperCopy) ? 'Selected' : 'Not Selected' }}
-                <svg v-if="isSelectedPaperCopy" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                class="px-6 pt-2.5 pb-2 bg-red text-white font-medium text-xs leading-normal uppercase rounded shadow-md transition duration-300 ease-in-out flex align-center items-center peer-checked:ring-green peer-checked:ring-2 peer-checked:border-transparent"
+              >
+                {{ isSelectedPaperCopy ? "Selected" : "Not Selected" }}
+                <svg
+                  v-if="isSelectedPaperCopy"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4 mr-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 019 14.437V9.564z" />
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4 ml-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 019 14.437V9.564z"
+                  />
                 </svg>
               </label>
-              <div class="absolute hidden w-5 h-5 peer-checked:block top-5 right-3"></div>
+              <div
+                class="absolute hidden w-5 h-5 peer-checked:block top-5 right-3"
+              ></div>
             </li>
-  
-            <li class="relative w-1/2 flex flex-col justify-center items-center !border-2 !border-green p-4 bg-white">
+
+            <li
+              class="relative w-1/2 flex flex-col justify-center items-center !border-2 !border-green p-4 bg-white"
+            >
               <h2 class="font-bold text-lg text-green mb-1">Admin Fee Cover</h2>
-              <input type="hidden" :value="admin_fee_amount" >
+              <input type="hidden" :value="admin_fee_amount" />
               <p class="font-bold text-lg mb-1">£{{ admin_fee_amount }}</p>
-              <input class="sr-only peer" type="checkbox" v-model="isAdminFeeSelected" id="paper_copy" @change="addCustomProject('admin_fee')">
-              <label for="paper_copy" 
+              <input
+                class="sr-only peer"
+                type="checkbox"
+                v-model="isAdminFeeSelected"
+                id="paper_copy"
+                @change="addCustomProject('admin_fee')"
+              />
+              <label
+                for="paper_copy"
                 :class="{
                   'bg-red': isAdminFeeSelected,
-                  'bg-gray-400': !isAdminFeeSelected
+                  'bg-gray-400': !isAdminFeeSelected,
                 }"
-                class="px-6 pt-2.5 pb-2 bg-red text-white font-medium text-xs leading-normal uppercase rounded shadow-md transition duration-300 ease-in-out flex align-center items-center peer-checked:ring-green peer-checked:ring-2 peer-checked:border-transparent">
-                {{ (isAdminFeeSelected) ? 'Selected' : 'Not Selected' }}
-                <svg v-if="isAdminFeeSelected" xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 mr-2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+                class="px-6 pt-2.5 pb-2 bg-red text-white font-medium text-xs leading-normal uppercase rounded shadow-md transition duration-300 ease-in-out flex align-center items-center peer-checked:ring-green peer-checked:ring-2 peer-checked:border-transparent"
+              >
+                {{ isAdminFeeSelected ? "Selected" : "Not Selected" }}
+                <svg
+                  v-if="isAdminFeeSelected"
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4 mr-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 12.75L11.25 15 15 9.75M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
                 </svg>
-                <svg v-else xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-4 h-4 ml-2">
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-                  <path stroke-linecap="round" stroke-linejoin="round" d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 019 14.437V9.564z" />
+                <svg
+                  v-else
+                  xmlns="http://www.w3.org/2000/svg"
+                  fill="none"
+                  viewBox="0 0 24 24"
+                  stroke-width="1.5"
+                  stroke="currentColor"
+                  class="w-4 h-4 ml-2"
+                >
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                  />
+                  <path
+                    stroke-linecap="round"
+                    stroke-linejoin="round"
+                    d="M9 9.563C9 9.252 9.252 9 9.563 9h4.874c.311 0 .563.252.563.563v4.874c0 .311-.252.563-.563.563H9.564A.562.562 0 019 14.437V9.564z"
+                  />
                 </svg>
               </label>
-              <div class="absolute hidden w-5 h-5 peer-checked:block top-5 right-3"></div>
+              <div
+                class="absolute hidden w-5 h-5 peer-checked:block top-5 right-3"
+              ></div>
             </li>
           </ul>
         </div>
-        <hr>
+        <hr />
         <div class="py-6 px-4 sm:px-6">
           <div class="flex justify-between text-base font-medium text-gray-900">
             <p>Donation Total:</p>
-            <p>{{ $formatAmount(totalDonation) }}</p>
+            <p>{{ formatAmount(totalDonation) }}</p>
           </div>
-          <div class="flex justify-between text-base font-medium text-gray-500" v-if="isSelectedPaperCopy">
+          <div
+            class="flex justify-between text-base font-medium text-gray-500"
+            v-if="isSelectedPaperCopy"
+          >
             <p>Paper Copy of Reciept:</p>
-            <p>{{ $formatAmount(paper_copy_amount) }}</p>
+            <p>{{ formatAmount(paper_copy_amount) }}</p>
           </div>
-          <div class="flex justify-between text-base font-medium text-gray-500" v-if="isAdminFeeSelected">
+          <div
+            class="flex justify-between text-base font-medium text-gray-500"
+            v-if="isAdminFeeSelected"
+          >
             <p>Admin Fee Cover:</p>
-            <p>{{ $formatAmount(admin_fee_amount) }}</p>
+            <p>{{ formatAmount(admin_fee_amount) }}</p>
           </div>
-          <div class="flex justify-between text-base font-medium text-gray-900 mb-4">
+          <div
+            class="flex justify-between text-base font-medium text-gray-900 mb-4"
+          >
             <p>Total Donation:</p>
-            <p>{{ $formatAmount(totalAmount) }}</p>
+            <p>{{ formatAmount(totalAmount) }}</p>
           </div>
-          <hr>
-          <div class="flex justify-between text-base font-medium text-gray-900 mt-4">
+          <hr />
+          <div
+            class="flex justify-between text-base font-medium text-gray-900 mt-4"
+          >
             <p>Thereafter per month:</p>
             <p>£292.00</p>
           </div>
           <div class="mt-6 flex justify-end">
-            <button :disabled="!donations.length" type="button" @click="moveForward()" :class="{
-              'bg-gray-400 cursor-not-allowed hover:bg-gray-400' : !donations.length,
-              'bg-red' : donations.length
-            }" class="px-6 pt-2.5 pb-2 text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center">
-                Proceed to Checkout
-                <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 ml-3">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+            <button
+              :disabled="!donations.length"
+              type="button"
+              @click="moveForward()"
+              :class="{
+                'bg-gray-400 cursor-not-allowed hover:bg-gray-400':
+                  !donations.length,
+                'bg-red': donations.length,
+              }"
+              class="px-6 pt-2.5 pb-2 text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center"
+            >
+              Proceed to Checkout
+              <svg
+                xmlns="http://www.w3.org/2000/svg"
+                fill="none"
+                viewBox="0 0 24 24"
+                stroke-width="1.5"
+                stroke="currentColor"
+                class="w-5 ml-3"
+              >
+                <path
+                  stroke-linecap="round"
+                  stroke-linejoin="round"
+                  d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+                />
               </svg>
-              </button>
+            </button>
           </div>
-         
         </div>
       </div>
 
@@ -155,14 +301,17 @@
         <div class="flex-1 py-6">
           <div class="flex items-start justify-between my-4">
             <div class="">
-              <h2 class="text-2xl font-bold text-gray-900 w-full" id="slide-over-title">
+              <h2
+                class="text-2xl font-bold text-gray-900 w-full"
+                id="slide-over-title"
+              >
                 Your Donation
               </h2>
-              <p>See the details of your donation below:</p> 
+              <p>See the details of your donation below:</p>
             </div>
           </div>
         </div>
-        <hr>
+        <hr />
         <p class="my-4">Personal Information</p>
         <div class="grid grid-cols-1 md:grid-cols-2 gap-2 mb-2">
           <input
@@ -247,8 +396,8 @@
                 donation by 25%
               </p>
               <p class="text-gray-500 mb-2">
-                With Gift Aid, your donation of £50.00 would be worth £62.50
-                at no <br />
+                With Gift Aid, your donation of £50.00 would be worth £62.50 at
+                no <br />
                 extra cost to you.
               </p>
             </div>
@@ -259,11 +408,10 @@
           <div class="font-normal text-sm bg-gray-200 p-3 mb-2">
             <p>
               I am a UK taxpayer and I understand that if I pay less Income
-              and/or Capital Gains Tax than the amount of Gift Aid claimed
-              on all my donations in the relevant tax year, it is my
-              responsibility to pay any difference. I understand that Gift
-              Aid will fund administrative costs as well as our charitable
-              programmes.
+              and/or Capital Gains Tax than the amount of Gift Aid claimed on
+              all my donations in the relevant tax year, it is my responsibility
+              to pay any difference. I understand that Gift Aid will fund
+              administrative costs as well as our charitable programmes.
             </p>
           </div>
           <div class="mb-2">
@@ -277,8 +425,6 @@
               >I Agree, I would like to boost my donation with Gift Aid sadf
             </label>
           </div>
-
-          
         </div>
 
         <div class="mt-4">
@@ -292,10 +438,7 @@
                 name="method"
                 value="Credit Card"
               />
-              <label
-                for="radio1"
-                class="flex gap-1 items-center"
-              >
+              <label for="radio1" class="flex gap-1 items-center">
                 <IconCreditCard />
                 Credit Card</label
               >
@@ -309,14 +452,11 @@
                 value="PayPal"
                 name="method"
               />
-              <label
-                for="radio2"
-                class="flex gap-1 items-center"
-              >
+              <label for="radio2" class="flex gap-1 items-center">
                 <IconPaypalCard />
                 <span v-if="hasMonthly" class="text-danger text-sm"
-                  >Paypal is not available if any subscription product exist
-                  in your basket</span
+                  >Paypal is not available if any subscription product exist in
+                  your basket</span
                 >
                 <span v-else>Paypal</span>
               </label>
@@ -324,37 +464,75 @@
           </div>
         </div>
         <ul v-if="errors" class="list-disc px-6" ref="errorsRefs">
-          <li class="text-red" v-for="(error,index) in errors" :key="'error'+index">{{ error }}</li>
+          <li
+            class="text-red"
+            v-for="(error, index) in errors"
+            :key="'error' + index"
+          >
+            {{ error }}
+          </li>
         </ul>
         <div class="my-6 flex justify-between">
-            <button type="button" @click="moveBack()" class="px-6 pt-2.5 pb-2 bg-gray-600 text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center">
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 mr-3">
-                <path stroke-linecap="round" stroke-linejoin="round" d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
-              </svg>
-              Back
-
-            </button>
-            <button type="button" @click="moveForward()" class="px-6 pt-2.5 pb-2 bg-red text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center">
-              Proceed to Payment
-              <svg xmlns="http://www.w3.org/2000/svg" fill="none" viewBox="0 0 24 24" stroke-width="1.5" stroke="currentColor" class="w-5 ml-3">
-              <path stroke-linecap="round" stroke-linejoin="round" d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z" />
+          <button
+            type="button"
+            @click="moveBack()"
+            class="px-6 pt-2.5 pb-2 bg-gray-600 text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center"
+          >
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 mr-3"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M11.25 9l-3 3m0 0l3 3m-3-3h7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
             </svg>
-            </button>
-          </div>
+            Back
+          </button>
+          <button
+            type="button"
+            @click="moveForward()"
+            class="px-6 pt-2.5 pb-2 bg-red text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center"
+          >
+            Proceed to Payment
+            <svg
+              xmlns="http://www.w3.org/2000/svg"
+              fill="none"
+              viewBox="0 0 24 24"
+              stroke-width="1.5"
+              stroke="currentColor"
+              class="w-5 ml-3"
+            >
+              <path
+                stroke-linecap="round"
+                stroke-linejoin="round"
+                d="M12.75 15l3-3m0 0l-3-3m3 3h-7.5M21 12a9 9 0 11-18 0 9 9 0 0118 0z"
+              />
+            </svg>
+          </button>
+        </div>
       </div>
-        
+
       <div class="checkout px-6" v-if="step == 3">
         <div class="flex-1 py-6">
           <div class="flex items-start justify-between my-4">
             <div class="">
-              <h2 class="text-2xl font-bold text-gray-900 w-full" id="slide-over-title">
+              <h2
+                class="text-2xl font-bold text-gray-900 w-full"
+                id="slide-over-title"
+              >
                 Your Donation
               </h2>
-              <p>Please Fill Payment Informations</p> 
+              <p>Please Fill Payment Informations</p>
             </div>
           </div>
         </div>
-        <hr>
+        <hr />
         <Paypal
           @moveBack="moveBack()"
           :donations="donations"
@@ -387,15 +565,22 @@
         <div class="flex-1 py-6">
           <div class="flex items-center justify-center my-4">
             <div class="">
-              <h2 class="text-2xl font-bold text-gray-900 w-full flex justify-center" id="slide-over-title">
+              <h2
+                class="text-2xl font-bold text-gray-900 w-full flex justify-center"
+                id="slide-over-title"
+              >
                 <IconCheck />
               </h2>
-              <strong>Jazakallah Khair</strong> 
+              <strong>Jazakallah Khair</strong>
             </div>
           </div>
         </div>
         <div class="flex justify-center">
-          <button type="button" @click="makeAnother()" class="px-6 pt-2.5 pb-2 bg-gray-600 text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center">
+          <button
+            type="button"
+            @click="makeAnother()"
+            class="px-6 pt-2.5 pb-2 bg-gray-600 text-white font-medium text-xs leading-normal uppercase rounded shadow-md hover:bg-green hover:shadow-lg focus:bg-green focus:shadow-lg focus:outline-none focus:ring-0 active:bg-green active:shadow-lg transition duration-300 ease-in-out flex align-center items-center"
+          >
             Make Another Donation
           </button>
         </div>
@@ -411,12 +596,9 @@ import IconPaypalCard from "../components/icons/IconPaypalCard.vue";
 import IconCheck from "../components/icons/IconCheck.vue";
 import Paypal from "../components/Paypal.vue";
 import Stripe from "../components/Stripe.vue";
+import { formatAmount } from "@/use/useCurrency";
 export default {
-  props: [
-    'donations',
-    'form',
-    'stripePublicKey'
-  ],
+  props: ["donations", "form", "stripePublicKey"],
   components: {
     IconCreditCard,
     IconPaypalCard,
@@ -431,15 +613,15 @@ export default {
       errors: {},
       // isSelectedPaperCopy:false,
       // isAdminFeeSelected: false,
-      paper_copy_amount:10,
+      paper_copy_amount: 10,
       admin_fee_amount: 10,
       // donationTotal:0,
       // totalDonation: 0,
-    }
+    };
   },
   methods: {
     makeAnother() {
-      this.step = 1
+      this.step = 1;
     },
     assets(asset) {
       return Api.assets(asset);
@@ -448,13 +630,11 @@ export default {
       this.step--;
     },
     moveForward() {
-      // console.log(this.step,this.validateStep())
-      if(!this.validateStep()) return
+      if (!this.validateStep()) return;
 
       this.step++;
     },
     validateStep() {
-      
       this.errors = {};
       let validated = true;
       if (this.step == 2) {
@@ -492,15 +672,17 @@ export default {
         }
       }
 
-      return validated
+      return validated;
     },
-    donationType(project,donation_type_id) {
-      const donation = project.donation_types.find(o => o.id === donation_type_id)
-      if(!donation) return ""
+    donationType(project, donation_type_id) {
+      const donation = project.donation_types.find(
+        (o) => o.id === donation_type_id
+      );
+      if (!donation) return "";
       return donation.name;
     },
     async PaypalPaymentFailed(error) {
-      console.log(error);
+      console.error(error);
     },
     addCustomProject(type) {
       // if (type == "admin_fee") {
@@ -510,10 +692,10 @@ export default {
       // }
     },
     removeItem(index) {
-      this.$emit('removeItem',index)
+      this.$emit("removeItem", index);
     },
     async stripePayment(token) {
-      this.form.donations = this.donations
+      this.form.donations = this.donations;
       let { data } = await Api.saveDonation(this.form);
       if (data.success == true) {
         let payment = {};
@@ -542,66 +724,62 @@ export default {
         let pay = await Api.makePayment(payment);
         if (pay.data.success) {
           initAgain();
-          this.moveForward()
+          this.moveForward();
         }
       }
     },
     async PaypalPaymentSuccess(response) {
-      this.form.donations = this.donations
+      this.form.donations = this.donations;
       let { data } = await Api.saveDonation(this.form);
 
       this.initAgain();
-      this.moveForward()
+      this.moveForward();
     },
     async PaypalPaymentFailed(error) {
-      console.log(error);
+      console.error(error);
     },
     initAgain() {
-      this.$emit('initAgain')
-    },
-    $formatAmount(amount) {
-      return "£" + parseFloat(amount).toFixed(2);
+      this.$emit("initAgain");
     },
   },
-  
+
   computed: {
     hasMonthly() {
       return this.donations.some((d) => d.monthly);
     },
     isAdminFeeSelected: {
       get() {
-        return this.form.admin_fee_cover
+        return this.form.admin_fee_cover;
       },
       set(val) {
-        this.$emit('toggleCustomProject','admin_fee',val)
-      }
+        this.$emit("toggleCustomProject", "admin_fee", val);
+      },
     },
     isSelectedPaperCopy: {
       get() {
-        return this.form.paper_copy
+        return this.form.paper_copy;
       },
       set(val) {
-        this.$emit('toggleCustomProject','paper_copy',val)
-      }
+        this.$emit("toggleCustomProject", "paper_copy", val);
+      },
     },
     totalDonation() {
-
-      if (this.donations.length <= 0) return 0
+      if (this.donations.length <= 0) return 0;
 
       const total = this.donations.reduce((accumulator, currentValue) => {
-        const amount = currentValue.amount ?? currentValue.fix_amount
-        return accumulator + amount
-      }, 0)
-      
-      return total
+        const amount = currentValue.amount ?? currentValue.fix_amount;
+        return accumulator + amount;
+      }, 0);
+
+      return total;
     },
     totalAmount() {
-      const a = this.isAdminFeeSelected ? this.admin_fee_amount : 0
-      const b = this.isSelectedPaperCopy ? this.paper_copy_amount : 0
-      const total =  this.totalDonation + a + b
-      this.$emit('totalAmount', total)
-      return total
-    }
-  }
-}
+      const a = this.isAdminFeeSelected ? this.admin_fee_amount : 0;
+      const b = this.isSelectedPaperCopy ? this.paper_copy_amount : 0;
+      const total = this.totalDonation + a + b;
+      this.$emit("totalAmount", total);
+      return total;
+    },
+  },
+};
 </script>

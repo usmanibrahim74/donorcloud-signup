@@ -1,7 +1,6 @@
 <template lang="">
   <h4 class="font-bold text-lg mt-5 mb-2">Choose Payment Method</h4>
   <RadioGroup v-model="model">
-    <RadioGroupLabel class="sr-only">Payment Method</RadioGroupLabel>
     <div class="flex gap-2">
       <RadioGroupOption
         class="w-full"
@@ -10,17 +9,18 @@
         :key="method.name"
         :value="method.id"
         :disabled="method.id === 'paypal' && hasMonthly"
-        v-slot="{ active, checked }"
+        v-slot="{ active, checked, disabled }"
       >
-        <div
-          :class="[
-            active
-              ? 'ring-2 ring-primary-100 ring-opacity-60 ring-offset-2 ring-offset-primary-100'
-              : '',
-            checked ? 'bg-primary-light text-white ' : 'bg-primary-50 ',
-          ]"
-          class="relative flex cursor-pointer rounded-lg px-5 py-4 shadow-md focus:outline-none"
-        >
+      <div
+      :title="disabled? 'This method is disabled because you have a monthly donation':''"
+      :class="[
+        active
+        ? 'ring-2 ring-primary-100 ring-opacity-60 ring-offset-2 ring-offset-primary-100'
+        : '',
+        disabled? 'bg-gray-200 cursor-default' : checked ? 'cursor-pointer bg-primary-light text-white ' : 'cursor-pointer bg-primary-50 ',
+      ]"
+          class="relative flex rounded-lg px-5 py-4 shadow-md focus:outline-none"
+          >
           <div class="flex w-full items-center justify-between">
             <div class="flex items-center">
               <div class="text-sm">

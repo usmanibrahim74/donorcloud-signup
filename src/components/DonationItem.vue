@@ -8,20 +8,23 @@
         <p class="text-sm">{{ model.donation_type.name }}</p>
       </div>
       <p class="text-gray-600 text-lg font-medium">
-        {{ $formatAmount(model.fixed_amount ?? model.amount) }}
-        {{ model.monthly ? 'monthly' : '' }}
+        {{ formatAmount(model.fixed_amount ?? model.amount) }}
+        {{ model.monthly ? "monthly" : "" }}
       </p>
     </div>
     <div class="flex gap-2 justify-between">
       <div class="flex gap-4 items-center">
         <button
-          type="button" :disabled="model.qty<=1" @click="decrement"
+          type="button"
+          :disabled="model.qty <= 1"
+          @click="decrement"
           class="flex justify-center items-center border border-primary bg-white rounded h-7 w-7"
         >
           <MinusIcon class="w-5 h-5" />
         </button>
         <span class="font-medium text-2xl">{{ model.qty }}</span>
-        <button @click="increment"
+        <button
+          @click="increment"
           type="button"
           class="flex justify-center items-center border border-primary bg-white rounded h-7 w-7"
         >
@@ -29,10 +32,16 @@
         </button>
       </div>
       <div class="flex gap-4 items-center">
-        <button class="bg-transparent border-transparent text-gray-600" @click="del">
+        <button
+          class="bg-transparent border-transparent text-gray-600"
+          @click="del"
+        >
           <TrashIcon class="w-7 h-7" />
         </button>
-        <button class="bg-transparent border-transparent text-gray-600" @click="edit">
+        <button
+          class="bg-transparent border-transparent text-gray-600"
+          @click="edit"
+        >
           <PencilSquareIcon class="w-7 h-7" />
         </button>
       </div>
@@ -47,6 +56,7 @@ import {
   PencilSquareIcon,
 } from "@heroicons/vue/20/solid";
 import { computed } from "@vue/reactivity";
+import { useCurrency } from "@/use/useCurrency";
 export default {
   components: {
     PlusIcon,
@@ -68,27 +78,28 @@ export default {
 
     const increment = () => {
       model.value.qty++;
-    }
+    };
 
     const decrement = () => {
-      if(model.value.qty>1)
-      model.value.qty--;
-    }
+      if (model.value.qty > 1) model.value.qty--;
+    };
 
-    const del = () =>{
-      emit('delete');
-    }
-    const edit = () =>{
-      emit('edit');
-    }
-    
+    const del = () => {
+      emit("delete");
+    };
+    const edit = () => {
+      emit("edit");
+    };
+
+    const { formatAmount } = useCurrency();
 
     return {
       model,
       increment,
       decrement,
       del,
-      edit
+      edit,
+      formatAmount,
     };
   },
 };
