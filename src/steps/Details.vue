@@ -106,15 +106,15 @@
           <label v-for="i in contact" :key="i">
             <input
               type="checkbox"
-              v-model="model.contact_preference"
-              name="contact_preference"
+              v-model="model.communication_preference"
+              name="communication_preference"
               :value="i"
             />
             {{ i }}
           </label>
         </div>
         <HasError
-          v-if="errors.includes('contact_preference')"
+          v-if="errors.includes('communication_preference')"
           message="At least one is required"
         />
       </div>
@@ -207,7 +207,7 @@ export default {
         // 'gift_aid',
         "payment_method",
         "agree",
-        "contact_preference",
+        "communication_preference",
       ];
       const form = model.value;
       errors.value = required.filter((r) => {
