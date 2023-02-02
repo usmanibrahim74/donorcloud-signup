@@ -22,21 +22,17 @@ const url = (api) => {
   return window.SynergiApiURL + '/' + api;
 };
 export default {
+  fetchData(){
+    return axios.get(url("data"));
+  },
   saveDonation(payload) {
     return axios.post(url("donations"), payload);
   },
-  makePayment(payload) {
-    return axios.post(url("payments/pay"), payload);
+  
+  stripePayment(payload) {
+    return axios.post(url("stripe/payment"), payload);
   },
-  fetchProjects(category_id) {
-    return axios.get(url("projects"));
-  },
-  fetchProject(project_id) {
-    return axios.get(url(`projects/${project_id}`));
-  },
-  fetchGatewayKey(gateway){
-    return axios.get(url(`payments/gateways/${gateway}/key`));
-  },
+  
   assets(asset) {
     return import.meta.env.VITE_ASSETS_URL+ "/" + asset;
   },

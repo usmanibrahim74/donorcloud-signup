@@ -4,7 +4,6 @@ import { onMounted } from "vue";
 import Api from "./services/api";
 import countries from "./data/countries.json";
 import { donation, donor } from "./data/resets";
-import { VueFinalModal } from "vue-final-modal";
 import DonationStep from "./steps/Donation.vue";
 import BasketStep from "./steps/Basket.vue";
 import DetailsStep from "./steps/Details.vue";
@@ -12,16 +11,13 @@ import Stripe from "./components/Stripe.vue";
 import Paypal from "./components/Paypal.vue";
 import ThankyouStep from "./steps/Thankyou.vue";
 import ProgressStep from "./components/ProgressStep.vue";
-import Footer from "./components/Footer.vue";
 import Title from "./components/Title.vue";
 import Total from "./components/Total.vue";
-import Button from "./components/Button.vue";
-import { XCircleIcon } from "@heroicons/vue/20/solid";
+import Wrapper from "./Wrapper.vue";
 
 export default {
   name: "DonorCloud",
   components: {
-    VueFinalModal,
     DonationStep,
     BasketStep,
     DetailsStep,
@@ -29,244 +25,210 @@ export default {
     ThankyouStep,
     ProgressStep,
     Paypal,
-    Footer,
     Title,
     Total,
-    Button,
-    XCircleIcon,
+    Wrapper,
+  },
+  computed: {
+    monthlyDonations() {
+      return this.form.donations.filter((d) => d.monthly);
+    },
+    oneTimeDonations() {
+      return this.form.donations.filter((d) => !d.monthly);
+    },
   },
   setup() {
-    const donationForm = ref({ ...donation });
-    const state = reactive({
+    const form = reactive({
       donor: { ...donor },
       donations: [],
+      paypal_purchase_id: null,
     });
-    const open = ref(false);
-    const step = ref(1);
+
+    const state = reactive({
+      step: 1,
+      editIndex: null,
+      gatewayKeys: {
+        stripe: null,
+        paypal: null,
+      },
+      projects: [],
+      admin_fee: 0,
+      paymentType: null,
+      donation: { ...donation },
+    });
+
+    const getData = async () => {
+      const { data } = await Api.fetchData();
+      state.projects = data.projects;
+      state.gatewayKeys.stripe = data.stripe_gateway;
+      state.gatewayKeys.paypal = data.paypal_gateway;
+      state.admin_fee = data.admin_fee;
+    };
+
     const stepOneCompleted = () => {
-      if (editIndex.value == null) {
-        state.donations.push({ ...donationForm.value });
+      if (state.editIndex == null) {
+        form.donations.push({ ...state.donation });
       } else {
-        state.donations[editIndex.value] = { ...donationForm.value };
+        form.donations[state.editIndex] = { ...state.donation };
       }
-      step.value = 2;
+      state.step = 2;
     };
     const stepTwoCompleted = () => {
-      step.value = 3;
+      state.step = 3;
     };
 
-    const editIndex = ref(null);
     const edit = (index) => {
-      editIndex.value = index;
-      donationForm.value = {
-        ...state.donations[index],
+      state.editIndex = index;
+      state.donation = {
+        ...form.donations[index],
       };
-      step.value = 1;
-    };
-
-    const projects = ref([]);
-    const fetchProjects = async () => {
-      const { data } = await Api.fetchProjects();
-      projects.value = data.data;
-    };
-
-    const gatewayKeys = reactive({
-      stripe: null,
-      paypal: null,
-    });
-    const fetchGatewayKey = async (gateway) => {
-      const { data } = await Api.fetchGatewayKey(gateway);
-      gatewayKeys[gateway] = data?.data?.public_key;
+      state.step = 1;
     };
 
     const add = () => {
-      editIndex.value = null;
-      donationForm.value = {
+      state.editIndex = null;
+      state.donation = {
         ...donation,
       };
-      step.value = 1;
+      state.step = 1;
     };
 
-    const makePayment = async (token) => {
-      await Api.makePayment(token);
-    };
+    const handleStripeDonation = async (token) => {
+      const response = await saveDonation();
+      if (response?.donor) {
+        const { donor, oneOff, monthly } = response;
+        const payload = {
+          donor,
+          oneOff,
+          monthly,
+          token,
+        };
 
-    const paymentType = ref(null);
-    const paymentTypeStep = (model) => {
-      paymentType.value = model.value.payment_type;
-      step.value = 4;
-    };
+        const { data } = await Api.stripePayment(payload);
 
-    const monthlyDonations = computed(() => {
-      return state.donations.filter((d) => d.monthly);
-    });
-
-    const oneTimeDonations = computed(() => {
-      return state.donations.filter((d) => !d.monthly);
-    });
-
-    const total_onetime = computed(() => {
-      return oneTimeDonations.value
-        .map((d) => (d.fixed_amount ?? d.amount ?? 0) * d.qty)
-        .reduce((a, b) => a + b, 0);
-    });
-
-    const total_monthly = computed(() => {
-      return monthlyDonations.value
-        .map((d) => (d.fixed_amount ?? d.amount ?? 0) * d.qty)
-        .reduce((a, b) => a + b, 0);
-    });
-
-    const donate = async () => {
-      if (makePayment()) {
-        saveDonation();
+        loading.value = false;
+        state.step = 5;
       }
     };
 
+    const handlePaypalDonation = async (order) => {
+      if (order.status == "COMPLETED") {
+        form.paypal_purchase_id = order.id;
+        const response = await saveDonation();
+        loading.value = false;
+        state.step = 5;
+      }
+    };
+
+    const paymentTypeStep = (model) => {
+      state.paymentType = model.value.payment_type;
+      state.step = 4;
+    };
+
     const saveDonation = async () => {
-      await Api.saveDonation(state);
-      loading.value = false;
-      step.value = 5;
+      const { data } = await Api.saveDonation(form);
+      return data;
     };
 
     const handleClosed = () => {
-      if (step.value == 5) {
-        donationForm.value = { ...donation };
-        state.donor = { ...donor };
-        state.donations = [];
-        step.value = 1;
+      if (state.step == 5) {
+        state.donation = { ...donation };
+        form.donor = { ...donor };
+        form.donations = [];
+        state.step = 1;
       }
     };
 
     const loading = ref(false);
 
     onMounted(() => {
-      fetchProjects();
-      fetchGatewayKey("stripe");
-      fetchGatewayKey("paypal");
+      getData();
     });
     return {
-      donationForm,
-      open,
-      step,
       state,
-      gatewayKeys,
+      form,
       stepOneCompleted,
       stepTwoCompleted,
       edit,
       add,
-      projects,
-      donate,
       paymentTypeStep,
-      paymentType,
-      total_onetime,
-      total_monthly,
-      oneTimeDonations,
-      monthlyDonations,
       handleClosed,
       loading,
+      handleStripeDonation,
+      handlePaypalDonation,
     };
   },
 };
 </script>
 <template>
-  <Button
-    text="Donate"
-    @click="open = true"
-    class="fixed right-10 bottom-6"
-    active
-  />
-  <VueFinalModal
-    v-slot="{ close }"
-    overlay-class=""
-    classes="flex items-center justify-center px-5"
-    content-class="w-full max-w-[1400px] h-[calc(100vh_-_20px)] overflow-hidden rounded-3xl"
-    v-model="open"
-    @closed="handleClosed"
-  >
-    <div class="flex flex-col bg-white relative h-full">
-      <div
-        @click="close"
-        class="z-10 cursor-pointer absolute right-0 top-0 rounded-full opacity-80 text-gray-800 h-16 w-16"
-      >
-        <XCircleIcon />
+  <Wrapper @closed="handleClosed">
+    <div class="max-w-[900px] mx-auto px-4">
+      <Title />
+      <div class="flex items-center max-w-[700px] mx-auto my-4">
+        <progress-step
+          v-for="(s, i) in 3"
+          :key="i"
+          :step="s"
+          :current="state.step"
+        />
       </div>
-      <!-- overflow-auto max-h-[calc(100vh_-_128px)] -->
-      <main class="relative flex flex-col flex-1 justify-between overflow-auto h-full mb-[8rem] no-scrollbar">
-        <div class="max-w-[900px] mx-auto px-4">
-          <Title />
-          <div class="flex items-center max-w-[700px] mx-auto my-4">
-            <progress-step
-              v-for="(s, i) in 3"
-              :key="i"
-              :step="s"
-              :current="step"
-            />
-          </div>
-          <div class="max-w-[750px] mx-auto py-5 mb-10">
-            <DonationStep
-              v-model="donationForm"
-              :donations="state.donations"
-              @view-basket="step = 2"
-              :projects="projects"
-              v-show="step == 1"
-              @forward="stepOneCompleted"
-            />
-            <BasketStep
-              v-model="state"
-              v-show="step == 2"
-              @forward="stepTwoCompleted"
-              @edit="edit"
-              @add-another="add"
-            />
-            <DetailsStep
-              v-model="state.donor"
-              v-show="step == 3"
-              :hasMonthly="monthlyDonations.length > 0"
-              @backward="step = 2"
-              @forward="paymentTypeStep"
-            />
-            <Stripe
-              v-if="gatewayKeys.stripe"
-              :customer="state.donor"
-              :public-key="gatewayKeys.stripe"
-              v-show="step == 4 && paymentType == 'credit'"
-              @backward="step = 3"
-              @forward="donate"
-              :loading="loading"
-              @start-loading="loading = true"
-              @error="loading = false"
-            />
-            <Paypal
-              :client-id="gatewayKeys.paypal"
-              :loading="loading"
-              :donations="oneTimeDonations"
-              :projects="projects"
-              v-if="
-                gatewayKeys.paypal &&
-                step == 4 &&
-                paymentType == 'paypal' &&
-                monthlyDonations.length == 0
-              "
-              @backward="step = 3"
-              @forward="donate"
-              @start-loading="loading = true"
-              @error="loading = false"
-            />
-            <ThankyouStep v-if="step == 5" />
+      <div class="max-w-[750px] mx-auto py-5 mb-10">
+        <DonationStep
+          v-model="state.donation"
+          :donations="form.donations"
+          @view-basket="state.step = 2"
+          :projects="state.projects"
+          v-show="state.step == 1"
+          @forward="stepOneCompleted"
+        />
+        <BasketStep
+          v-model="form"
+          v-show="state.step == 2"
+          @forward="stepTwoCompleted"
+          @edit="edit"
+          @add-another="add"
+          :admin_fee="state.admin_fee"
+        />
+        <DetailsStep
+          v-model="form.donor"
+          v-show="state.step == 3"
+          :hasMonthly="monthlyDonations.length > 0"
+          @backward="state.step = 2"
+          @forward="paymentTypeStep"
+        />
+        <Stripe
+          v-if="state.gatewayKeys.stripe"
+          :customer="form.donor"
+          :public-key="state.gatewayKeys.stripe"
+          v-show="state.step == 4 && state.paymentType == 'credit'"
+          @backward="state.step = 3"
+          @forward="handleStripeDonation"
+          :loading="loading"
+          @start-loading="loading = true"
+          @error="loading = false"
+        />
+        <Paypal
+          :client-id="state.gatewayKeys.paypal"
+          :loading="loading"
+          :donations="oneTimeDonations"
+          :projects="state.projects"
+          v-if="
+            state.gatewayKeys.paypal &&
+            state.step == 4 &&
+            state.paymentType == 'paypal' &&
+            monthlyDonations.length == 0
+          "
+          @backward="state.step = 3"
+          @forward="handlePaypalDonation"
+          @start-loading="loading = true"
+          @error="loading = false"
+        />
+        <ThankyouStep v-if="state.step == 5" />
 
-            <Total
-              v-if="step < 5"
-              :oneTime="total_onetime"
-              :monthly="total_monthly"
-            />
-          </div>
-        </div>
-      </main>
-
-      <Footer />
+        <Total v-if="state.step < 5" :donations="form.donations" />
+      </div>
     </div>
-  </VueFinalModal>
+  </Wrapper>
 </template>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap");

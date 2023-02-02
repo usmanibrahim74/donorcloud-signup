@@ -18,22 +18,34 @@
   </div>
 </template>
 <script>
+import { computed } from "@vue/reactivity";
 import { useCurrency } from "@/use/useCurrency";
 export default {
   props: {
-    oneTime: {
-      type: Number,
-      required: 0,
-    },
-    monthly: {
-      type: Number,
-      required: 0,
+    donations: {
+      type: Array,
+      required: true,
     },
   },
-  setup() {
+  setup({ donations }) {
     const { formatAmount } = useCurrency();
+    const oneTime = computed(() => {
+      return donations
+        .filter((d) => !d.monthly)
+        .map((d) => (d.fixed_amount ?? d.amount ?? 0) * d.qty)
+        .reduce((a, b) => a + b, 0);
+    });
+
+    const monthly = computed(() => {
+      return donations
+        .filter((d) => d.monthly)
+        .map((d) => (d.fixed_amount ?? d.amount ?? 0) * d.qty)
+        .reduce((a, b) => a + b, 0);
+    });
     return {
       formatAmount,
+      oneTime,
+      monthly,
     };
   },
 };

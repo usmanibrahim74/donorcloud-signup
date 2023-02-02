@@ -8,23 +8,17 @@
         @delete="del(i)"
         @edit="edit(i)"
       />
-      <p
+      <!-- <p
         class="font-sans text-center mt-4 mb-2 text-gray-400 text-2xl font-medium"
       >
         Further Support Us
       </p>
-      <!-- <div class="flex gap-4 text-center mb-5">
+      <div class="flex gap-4 text-center mb-5">
         <SupportFee
           text="Admin Fee"
-          amount="$3.00"
+          :amount="admin_fee"
           :active="model.admin_fee"
           @click="model.admin_fee = !model.admin_fee"
-        />
-        <SupportFee
-          text="Paper Receipt Fee"
-          amount="$3.00"
-          :active="model.paper_fee"
-          @click="model.paper_fee = !model.paper_fee"
         />
       </div> -->
 
@@ -56,6 +50,10 @@ export default {
       type: Object,
       required: true,
     },
+    admin_fee:{
+      type: Number,
+      required: true
+    }
   },
   setup(props, { emit }) {
     const model = computed({
