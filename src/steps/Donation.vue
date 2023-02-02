@@ -101,8 +101,7 @@ export default {
       get: () => model.value.project_id,
       set: (value) => {
         const project = props.projects.find((p) => p.id == value);
-        variations.value = project.variations;
-        donation_types.value = project.donation_types;
+        
         model.value.project = project;
         model.value.project_id = value;
         model.value.donation_type_id = null;

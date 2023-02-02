@@ -28,6 +28,7 @@ export default {
   saveDonation(payload) {
     return axios.post(url("donations"), payload);
   },
+  
   stripePayment(payload) {
     return axios.post(url("stripe/payment"), payload);
   },

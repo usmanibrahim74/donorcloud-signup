@@ -23,8 +23,8 @@ export default {
       default: "Text",
     },
     amount: {
-      type: String,
       default: "3.00",
+      required: true,
     },
   },
   setup(){

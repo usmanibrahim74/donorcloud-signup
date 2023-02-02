@@ -8,7 +8,7 @@
         @delete="del(i)"
         @edit="edit(i)"
       />
-      <p
+      <!-- <p
         class="font-sans text-center mt-4 mb-2 text-gray-400 text-2xl font-medium"
       >
         Further Support Us
@@ -20,7 +20,7 @@
           :active="model.admin_fee"
           @click="model.admin_fee = !model.admin_fee"
         />
-      </div>
+      </div> -->
 
       <div class="flex gap-2">
         <Button
