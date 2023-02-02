@@ -64,19 +64,18 @@ export default {
       step.value = 1;
     };
 
-    const projects = ref([]);
-    const fetchProjects = async () => {
-      const { data } = await Api.fetchProjects();
-      projects.value = data.data;
-    };
-
     const gatewayKeys = reactive({
       stripe: null,
       paypal: null,
     });
-    const fetchGatewayKey = async (gateway) => {
-      const { data } = await Api.fetchGatewayKey(gateway);
-      gatewayKeys[gateway] = data.data.public_key;
+    const projects = ref([]);
+    const admin_fee = ref(0);
+    const getData = async () => {
+      const { data } = await Api.fetchData();
+      projects.value = data.projects;
+      gatewayKeys.stripe = data.stripe_gateway;
+      gatewayKeys.paypal = data.paypal_gateway;
+      admin_fee.value = data.admin_fee;
     };
 
     const add = () => {
@@ -87,9 +86,28 @@ export default {
       step.value = 1;
     };
 
-    const makePayment = async (token) => {
-      await Api.makePayment(token);
+    const handleStripeDonation = async (token) => {
+      const response = await saveDonation();
+      if (response?.donor) {
+        const { donor, oneOff, monthly } = response;
+        const payload = {
+          donor,
+          oneOff,
+          monthly,
+          token,
+          amount: {
+            oneOff: total_onetime.value,
+            monthly: total_monthly.value,
+          },
+        };
+
+        const { data } = await Api.stripePayment(payload);
+
+        loading.value = false;
+        step.value = 5;
+      }
     };
+
 
     const paymentType = ref(null);
     const paymentTypeStep = (model) => {
@@ -118,15 +136,14 @@ export default {
     });
 
     const donate = async () => {
-      if (makePayment()) {
-        saveDonation();
+      if (saveDonation()) {
+        makePayment();
       }
     };
 
     const saveDonation = async () => {
-      await Api.saveDonation(state);
-      loading.value = false;
-      step.value = 5;
+      const { data } = await Api.saveDonation(state);
+      return data;
     };
 
     const handleClosed = () => {
@@ -141,9 +158,7 @@ export default {
     const loading = ref(false);
 
     onMounted(() => {
-      fetchProjects();
-      fetchGatewayKey("stripe");
-      fetchGatewayKey("paypal");
+      getData();
     });
     return {
       donationForm,
@@ -165,6 +180,7 @@ export default {
       monthlyDonations,
       handleClosed,
       loading,
+      handleStripeDonation,
     };
   },
 };
@@ -192,7 +208,9 @@ export default {
         <XCircleIcon />
       </div>
       <!-- overflow-auto max-h-[calc(100vh_-_128px)] -->
-      <main class="relative flex flex-col flex-1 justify-between overflow-auto h-full mb-[8rem] no-scrollbar">
+      <main
+        class="relative flex flex-col flex-1 justify-between overflow-auto h-full mb-[8rem] no-scrollbar"
+      >
         <div class="max-w-[900px] mx-auto px-4">
           <Title />
           <div class="flex items-center max-w-[700px] mx-auto my-4">
@@ -216,6 +234,7 @@ export default {
               @forward="stepTwoCompleted"
               @edit="edit"
               @add-another="add"
+              :admin_fee="admin_fee"
             />
             <DetailsStep
               v-model="state.donor"
@@ -230,7 +249,7 @@ export default {
               :public-key="gatewayKeys.stripe"
               v-show="step == 4 && paymentType == 'credit'"
               @backward="step = 3"
-              @forward="donate"
+              @forward="handleStripeDonation"
               :loading="loading"
               @start-loading="loading = true"
               @error="loading = false"
@@ -247,7 +266,7 @@ export default {
                 monthlyDonations.length == 0
               "
               @backward="step = 3"
-              @forward="donate"
+              @forward="handlePaypal"
               @start-loading="loading = true"
               @error="loading = false"
             />

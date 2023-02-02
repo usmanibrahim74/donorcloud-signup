@@ -27,8 +27,8 @@ const donor = {
     payment_type: 'credit',
     date: new Date().toJSON().slice(0, 10).replace(/-/g, '-'),
     paper_copy: false,
-    admin_fee_cover: false,
-    communication_preference: [],
+    admin_fee: false,
+    communication_preferences: [],
     agree: 0
 }
 

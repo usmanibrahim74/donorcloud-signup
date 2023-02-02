@@ -115,11 +115,11 @@
                 class="sr-only peer"
                 type="checkbox"
                 v-model="isSelectedPaperCopy"
-                id="admin_fee_cover"
+                id="admin_fee"
                 @change="addCustomProject('paper_copy')"
               />
               <label
-                for="admin_fee_cover"
+                for="admin_fee"
                 :class="{
                   'bg-red': isSelectedPaperCopy,
                   'bg-gray-400': !isSelectedPaperCopy,
@@ -611,12 +611,7 @@ export default {
       step: 1,
       countries: countries,
       errors: {},
-      // isSelectedPaperCopy:false,
-      // isAdminFeeSelected: false,
-      paper_copy_amount: 10,
       admin_fee_amount: 10,
-      // donationTotal:0,
-      // totalDonation: 0,
     };
   },
   methods: {
@@ -749,18 +744,10 @@ export default {
     },
     isAdminFeeSelected: {
       get() {
-        return this.form.admin_fee_cover;
+        return this.form.admin_fee;
       },
       set(val) {
         this.$emit("toggleCustomProject", "admin_fee", val);
-      },
-    },
-    isSelectedPaperCopy: {
-      get() {
-        return this.form.paper_copy;
-      },
-      set(val) {
-        this.$emit("toggleCustomProject", "paper_copy", val);
       },
     },
     totalDonation() {
@@ -775,8 +762,7 @@ export default {
     },
     totalAmount() {
       const a = this.isAdminFeeSelected ? this.admin_fee_amount : 0;
-      const b = this.isSelectedPaperCopy ? this.paper_copy_amount : 0;
-      const total = this.totalDonation + a + b;
+      const total = this.totalDonation + a;
       this.$emit("totalAmount", total);
       return total;
     },

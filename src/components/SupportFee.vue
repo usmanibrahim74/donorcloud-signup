@@ -7,10 +7,11 @@
     type="button"
   >
     <h3 class="font-sans text-xl font-medium">{{text}}</h3>
-    <p class="font-sans font-extrabold text-lg">{{ amount }}</p>
+    <p class="font-sans font-extrabold text-lg">{{ formatAmount(amount) }}</p>
   </button>
 </template>
 <script>
+import { useCurrency } from "@/use/useCurrency";
 export default {
   props: {
     active: {
@@ -26,6 +27,12 @@ export default {
       default: "3.00",
     },
   },
+  setup(){
+    const {formatAmount} = useCurrency();
+    return {
+      formatAmount
+    }
+  }
 };
 </script>
 <style lang=""></style>

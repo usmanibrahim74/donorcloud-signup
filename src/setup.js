@@ -3,5 +3,5 @@ if(!window.SynergiAssetURL){
 }
 
 if(!window.SynergiApiURL){
-    window.SynergiApiURL = "http://127.0.0.1:8000/api/modal";
+    window.SynergiApiURL = "http://127.0.0.1:8000/api/plugin";
 }
