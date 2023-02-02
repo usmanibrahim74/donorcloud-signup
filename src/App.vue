@@ -175,6 +175,8 @@ export default {
       <div class="max-w-[750px] mx-auto py-5 mb-10">
         <DonationStep
           v-model="state.donation"
+          :donations="form.donations"
+          @view-basket="state.step = 2"
           :projects="state.projects"
           v-show="state.step == 1"
           @forward="stepOneCompleted"

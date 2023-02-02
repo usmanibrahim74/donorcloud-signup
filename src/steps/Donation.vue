@@ -48,8 +48,9 @@
         field="amount"
         errorMessage="Please select or enter amount"
       />
-      <div class="flex justify-center">
-        <Button type="submit" text="Add To Basket" active />
+      <div class="flex items-center justify-center mt-8 gap-4">
+        <Button class="px-3" type="submit" text="Add To Basket" active />
+        <Button v-if="donations.length" text="View Basket" @click="$emit('view-basket')" />
       </div>
     </form>
   </div>
@@ -75,6 +76,10 @@ export default {
       required: true,
     },
     projects: {
+      type: Array,
+      required: true,
+    },
+    donations: {
       type: Array,
       required: true,
     },
