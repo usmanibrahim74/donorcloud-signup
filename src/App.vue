@@ -76,7 +76,7 @@ export default {
     });
     const fetchGatewayKey = async (gateway) => {
       const { data } = await Api.fetchGatewayKey(gateway);
-      gatewayKeys[gateway] = data.data.public_key;
+      gatewayKeys[gateway] = data?.data?.public_key;
     };
 
     const add = () => {
@@ -206,6 +206,8 @@ export default {
           <div class="max-w-[750px] mx-auto py-5 mb-10">
             <DonationStep
               v-model="donationForm"
+              :donations="state.donations"
+              @view-basket="step = 2"
               :projects="projects"
               v-show="step == 1"
               @forward="stepOneCompleted"
