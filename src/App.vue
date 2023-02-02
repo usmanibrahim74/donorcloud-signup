@@ -1,8 +1,6 @@
 <script>
 import { reactive, ref, computed } from "@vue/reactivity";
-import { onMounted } from "vue";
 import Api from "./services/api";
-import countries from "./data/countries.json";
 import { donation, donor } from "./data/resets";
 import DonationStep from "./steps/Donation.vue";
 import BasketStep from "./steps/Basket.vue";
@@ -37,6 +35,9 @@ export default {
       return this.form.donations.filter((d) => !d.monthly);
     },
   },
+  mounted(){
+    this.getData();
+  },
   setup() {
     const form = reactive({
       donor: { ...donor },
@@ -55,6 +56,7 @@ export default {
       admin_fee: 0,
       paymentType: null,
       donation: { ...donation },
+      loading: false,
     });
 
     const getData = async () => {
@@ -106,7 +108,7 @@ export default {
 
         const { data } = await Api.stripePayment(payload);
 
-        loading.value = false;
+        state.loading = false;
         state.step = 5;
       }
     };
@@ -115,7 +117,7 @@ export default {
       if (order.status == "COMPLETED") {
         form.paypal_purchase_id = order.id;
         const response = await saveDonation();
-        loading.value = false;
+        state.loading = false;
         state.step = 5;
       }
     };
@@ -139,11 +141,7 @@ export default {
       }
     };
 
-    const loading = ref(false);
 
-    onMounted(() => {
-      getData();
-    });
     return {
       state,
       form,
@@ -153,9 +151,9 @@ export default {
       add,
       paymentTypeStep,
       handleClosed,
-      loading,
       handleStripeDonation,
       handlePaypalDonation,
+      getData,
     };
   },
 };
@@ -203,13 +201,13 @@ export default {
           v-show="state.step == 4 && state.paymentType == 'credit'"
           @backward="state.step = 3"
           @forward="handleStripeDonation"
-          :loading="loading"
-          @start-loading="loading = true"
-          @error="loading = false"
+          :loading="state.loading"
+          @start-loading="state.loading = true"
+          @error="state.loading = false"
         />
         <Paypal
           :client-id="state.gatewayKeys.paypal"
-          :loading="loading"
+          :loading="state.loading"
           :donations="oneTimeDonations"
           :projects="state.projects"
           v-if="
@@ -220,8 +218,8 @@ export default {
           "
           @backward="state.step = 3"
           @forward="handlePaypalDonation"
-          @start-loading="loading = true"
-          @error="loading = false"
+          @start-loading="state.loading = true"
+          @error="state.loading = false"
         />
         <ThankyouStep v-if="state.step == 5" />
 
