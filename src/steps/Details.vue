@@ -103,7 +103,7 @@
           How would you like to be contacted?
         </h4>
         <div class="flex gap-3">
-          <label v-for="i in contact" :key="i">
+          <label v-for="i in communication_preferences" :key="i">
             <input
               type="checkbox"
               v-model="model.communication_preference"
@@ -225,7 +225,7 @@ export default {
       title,
       contactMeError,
       agreeError,
-      contact: ["Email", "Phone", "SMS", "Post"],
+      communication_preferences: ["Email", "Phone", "SMS", "Post"],
     };
   },
 };
