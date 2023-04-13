@@ -1,11 +1,11 @@
 <script>
 import { reactive, ref, computed } from "@vue/reactivity";
 import Api from "./services/api";
-import { donation, donor } from "./data/resets";
+import { donation, donor } from "./data/sample";
 import DonationStep from "./steps/Donation.vue";
 import BasketStep from "./steps/Basket.vue";
 import DetailsStep from "./steps/Details.vue";
-import Stripe from "./components/Stripe.vue";
+import StripeComponent from "./components/Stripe.vue";
 import Paypal from "./components/Paypal.vue";
 import ThankyouStep from "./steps/Thankyou.vue";
 import ProgressStep from "./components/ProgressStep.vue";
@@ -19,7 +19,7 @@ export default {
     DonationStep,
     BasketStep,
     DetailsStep,
-    Stripe,
+    StripeComponent,
     ThankyouStep,
     ProgressStep,
     Paypal,
@@ -27,22 +27,21 @@ export default {
     Total,
     Wrapper,
   },
-  computed: {
-    monthlyDonations() {
-      return this.form.donations.filter((d) => d.monthly);
-    },
-    oneTimeDonations() {
-      return this.form.donations.filter((d) => !d.monthly);
-    },
-  },
-  mounted(){
+  computed: {},
+  mounted() {
     this.getData();
   },
   setup() {
     const form = reactive({
       donor: { ...donor },
       donations: [],
-      paypal_purchase_id: null,
+      paypal: {
+        purchase_id: null
+      },
+      stripe: {
+        subscription_id: null,
+        payment_intent_id: null,
+      },
     });
 
     const state = reactive({
@@ -65,6 +64,7 @@ export default {
       state.gatewayKeys.stripe = data.stripe_gateway;
       state.gatewayKeys.paypal = data.paypal_gateway;
       state.admin_fee = data.admin_fee;
+      state.currency = data.currency;
     };
 
     const stepOneCompleted = () => {
@@ -96,26 +96,47 @@ export default {
     };
 
     const handleStripeDonation = async (token) => {
-      const response = await saveDonation();
-      if (response?.donor) {
-        const { donor, oneOff, monthly } = response;
-        const payload = {
-          donor,
-          oneOff,
-          monthly,
-          token,
+      const success = await handleStripePayment(token);
+      if (success) {
+        const response = await saveDonation();
+        state.step = 5;
+      }
+      state.loading = false;
+    };
+
+    const handleStripePayment = async (token) => {
+      const { title, first_name, last_name, email } = form.donor;
+      const payload = {
+        name: `${title} ${first_name} ${last_name}`,
+        email: email,
+        oneTimeDonation: getTotalAmount(computedProps.oneTimeDonations.value),
+        monthlyDonation: getTotalAmount(computedProps.monthlyDonations.value),
+        token: token,
+      };
+
+      try {
+        const { data } = await Api.stripePayment(payload);
+        if (data.secret) {
+          const stripe = computedProps.stripe.value;
+          const { paymentIntent, error: paymentIntentError } =
+            await stripe.confirmCardPayment(data.secret);
+        }
+
+        form.stripe = {
+          subscription_id: data.subscription_id ?? null,
+          payment_intent_id: data.payment_intent_id ?? null,
         };
 
-        const { data } = await Api.stripePayment(payload);
-
-        state.loading = false;
-        state.step = 5;
+        return true;
+      } catch (e) {
+        console.error(e);
+        return false;
       }
     };
 
     const handlePaypalDonation = async (order) => {
       if (order.status == "COMPLETED") {
-        form.paypal_purchase_id = order.id;
+        form.paypal.purchase_id = order.id;
         const response = await saveDonation();
         state.loading = false;
         state.step = 5;
@@ -128,7 +149,15 @@ export default {
     };
 
     const saveDonation = async () => {
-      const { data } = await Api.saveDonation(form);
+      const payload = {
+        donor: { ...form.donor },
+        oneTimeDonations: [...computedProps.oneTimeDonations.value],
+        monthlyDonations: [...computedProps.monthlyDonations.value],
+        paypal: {...form.paypal},
+        stripe: {...form.stripe},
+      };
+
+      const { data } = await Api.saveDonation(payload);
       return data;
     };
 
@@ -141,6 +170,26 @@ export default {
       }
     };
 
+    const getTotalAmount = (donations) => {
+      return donations
+        .map((d) => d.fixed_amount ?? d.amount)
+        .reduce((partialSum, a) => partialSum + parseFloat(a), 0);
+    };
+
+    const computedProps = {
+      oneTimeDonations: computed(() => {
+        return form.donations.filter((d) => !d.monthly);
+      }),
+      monthlyDonations: computed(() => {
+        return form.donations.filter((d) => d.monthly);
+      }),
+      stripe: computed(() => {
+        if (state.gatewayKeys?.stripe) {
+          return Stripe(state.gatewayKeys.stripe);
+        }
+        return null;
+      }),
+    };
 
     return {
       state,
@@ -154,6 +203,7 @@ export default {
       handleStripeDonation,
       handlePaypalDonation,
       getData,
+      ...computedProps,
     };
   },
 };
@@ -194,10 +244,10 @@ export default {
           @backward="state.step = 2"
           @forward="paymentTypeStep"
         />
-        <Stripe
+        <StripeComponent
           v-if="state.gatewayKeys.stripe"
           :customer="form.donor"
-          :public-key="state.gatewayKeys.stripe"
+          :stripe="stripe"
           v-show="state.step == 4 && state.paymentType == 'credit'"
           @backward="state.step = 3"
           @forward="handleStripeDonation"

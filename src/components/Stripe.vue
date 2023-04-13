@@ -80,7 +80,7 @@ import HasError from "./HasError.vue";
 import Loader from "./Loader.vue";
 
 export default {
-  props: ["amount", "customer", "publicKey", "loading"],
+  props: ["amount", "customer", "stripe", "loading"],
   components: {
     Button,
     HasError,
@@ -100,7 +100,6 @@ export default {
         cvc: "",
         expiry: "",
       },
-      stripe: null,
 
       // errors
       messages: {
@@ -132,10 +131,8 @@ export default {
       this.$emit("backward");
     },
     setUpStripe() {
-      const stripe = Stripe(this.publicKey);
-      this.stripe = stripe;
 
-      const elements = stripe.elements();
+      const elements = this.stripe.elements();
       this.elements = {
         number: elements.create("cardNumber"),
         cvc: elements.create("cardCvc"),
@@ -173,7 +170,8 @@ export default {
         this.$emit("startLoading");
         this.stripe
           .createToken(this.elements.number, {
-            name: this.customer.email,
+            name: this.customer.first_name,
+            email: this.customer.email,
             address_line1: this.customer.address_line_1,
             address_city: this.customer.city,
             address_country: this.customer.country,
