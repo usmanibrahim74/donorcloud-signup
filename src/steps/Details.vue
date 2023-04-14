@@ -118,7 +118,7 @@
           message="At least one is required"
         />
       </div>
-      <PaymentMethod v-model="model.payment_type" :hasMonthly="hasMonthly" />
+      <PaymentMethod v-model="model.payment_type" :enable-stripe="enableStripe" :enable-paypal="enablePaypal" :has-monthly="hasMonthly" />
       <div>
         <label class="flex gap-2 mt-4">
           <input
@@ -169,6 +169,14 @@ export default {
       required: true,
     },
     hasMonthly: {
+      type: Boolean,
+      required: true,
+    },
+    enableStripe: {
+      type: Boolean,
+      required: true,
+    },
+    enablePaypal: {
       type: Boolean,
       required: true,
     },

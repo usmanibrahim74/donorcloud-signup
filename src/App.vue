@@ -1,7 +1,7 @@
 <script>
 import { reactive, ref, computed } from "@vue/reactivity";
 import Api from "./services/api";
-import { donation, donor } from "./data/sample";
+import { donation, donor } from "./data/resets";
 import DonationStep from "./steps/Donation.vue";
 import BasketStep from "./steps/Basket.vue";
 import DetailsStep from "./steps/Details.vue";
@@ -36,7 +36,7 @@ export default {
       donor: { ...donor },
       donations: [],
       paypal: {
-        purchase_id: null
+        purchase_id: null,
       },
       stripe: {
         subscription_id: null,
@@ -153,8 +153,8 @@ export default {
         donor: { ...form.donor },
         oneTimeDonations: [...computedProps.oneTimeDonations.value],
         monthlyDonations: [...computedProps.monthlyDonations.value],
-        paypal: {...form.paypal},
-        stripe: {...form.stripe},
+        paypal: { ...form.paypal },
+        stripe: { ...form.stripe },
       };
 
       const { data } = await Api.saveDonation(payload);
@@ -220,7 +220,10 @@ export default {
           :current="state.step"
         />
       </div>
-      <div class="max-w-[750px] mx-auto py-5 mb-10">
+      <div
+        class="max-w-[750px] mx-auto py-5 mb-10"
+        v-if="state.gatewayKeys.stripe || state.gatewayKeys.paypal"
+      >
         <DonationStep
           v-model="state.donation"
           :donations="form.donations"
@@ -241,6 +244,8 @@ export default {
           v-model="form.donor"
           v-show="state.step == 3"
           :hasMonthly="monthlyDonations.length > 0"
+          :enable-paypal="!!state.gatewayKeys.paypal"
+          :enable-stripe="!!state.gatewayKeys.stripe"
           @backward="state.step = 2"
           @forward="paymentTypeStep"
         />
@@ -274,6 +279,16 @@ export default {
         <ThankyouStep v-if="state.step == 5" />
 
         <Total v-if="state.step < 5" :donations="form.donations" />
+      </div>
+      <div class="max-w-[750px] mx-auto py-5 mb-10 flex items-center h-full" v-else>
+        <div
+          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
+          role="alert"
+        >
+          <strong class="font-bold">Error: </strong>
+          <span class="block sm:inline">No payment gateway is enabled. Please enable a payment gateway from the panel.</span>
+
+        </div>
       </div>
     </div>
   </Wrapper>

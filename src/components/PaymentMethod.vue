@@ -11,16 +11,24 @@
         :disabled="method.id === 'paypal' && hasMonthly"
         v-slot="{ active, checked, disabled }"
       >
-      <div
-      :title="disabled? 'This method is disabled because you have a monthly donation':''"
-      :class="[
-        active
-        ? 'ring-2 ring-primary-100 ring-opacity-60 ring-offset-2 ring-offset-primary-100'
-        : '',
-        disabled? 'bg-gray-200 cursor-default' : checked ? 'cursor-pointer bg-primary-light text-white ' : 'cursor-pointer bg-primary-50 ',
-      ]"
+        <div
+          :title="
+            disabled
+              ? 'This method is disabled because you have a monthly donation'
+              : ''
+          "
+          :class="[
+            active
+              ? 'ring-2 ring-primary-100 ring-opacity-60 ring-offset-2 ring-offset-primary-100'
+              : '',
+            disabled
+              ? 'bg-gray-200 cursor-default'
+              : checked
+              ? 'cursor-pointer bg-primary-light text-white '
+              : 'cursor-pointer bg-primary-50 ',
+          ]"
           class="relative flex rounded-lg px-5 py-4 shadow-md focus:outline-none"
-          >
+        >
           <div class="flex w-full items-center justify-between">
             <div class="flex items-center">
               <div class="text-sm">
@@ -54,10 +62,7 @@
 import { computed } from "@vue/reactivity";
 import { RadioGroup, RadioGroupLabel, RadioGroupOption } from "@headlessui/vue";
 import IconPaypalCard from "@/components/icons/IconPaypalCard.vue";
-import {
-  CheckIcon,
-  CreditCardIcon,
-} from "@heroicons/vue/20/solid";
+import { CheckIcon, CreditCardIcon } from "@heroicons/vue/20/solid";
 export default {
   components: {
     RadioGroup,
@@ -65,9 +70,9 @@ export default {
     RadioGroupOption,
     CheckIcon,
     CreditCardIcon,
-    IconPaypalCard
+    IconPaypalCard,
   },
-  props:{
+  props: {
     modelValue: {
       required: true,
     },
@@ -75,23 +80,37 @@ export default {
       type: Boolean,
       required: true,
     },
+    enableStripe: {
+      type: Boolean,
+      required: true,
+    },
+    enablePaypal: {
+      type: Boolean,
+      required: true,
+    },
   },
-  setup(props,{emit}){
-
+  setup(props, { emit }) {
     const model = computed({
       get: () => props.modelValue,
       set: (value) => emit("update:modelValue", value),
     });
-    const methods = [
-      {
-        id: "credit",
-        name: "Credit Card",
-      },
-      {
-        id: "paypal",
-        name: "Paypal",
-      },
-    ];
+
+    const methods = computed(() => {
+      let methods = [];
+      if (props.enableStripe) {
+        methods.push({
+          id: "credit",
+          name: "Credit Card",
+        });
+      }
+      if (!props.hasMonthly && props.enablePaypal) {
+        methods.push({
+          id: "paypal",
+          name: "Paypal",
+        });
+      }
+      return methods;
+    });
 
     return {
       model,
