@@ -14,18 +14,8 @@
     @closed="emitClosed"
   >
     <div class="flex flex-col bg-white relative h-full">
-      <div
-        @click="close"
-        class="z-10 cursor-pointer absolute right-0 top-0 rounded-full opacity-80 text-gray-800 h-16 w-16"
-      >
-        <XCircleIcon />
-      </div>
-      <!-- overflow-auto max-h-[calc(100vh_-_128px)] -->
-      <main
-        class="relative flex flex-col flex-1 justify-between overflow-auto h-full mb-[8rem] no-scrollbar"
-      >
-        <slot></slot>
-      </main>
+      
+      
 
       <Footer />
     </div>

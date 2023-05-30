@@ -11,9 +11,12 @@
     "@headlessui/vue": "^1.7.7",
     "@heroicons/vue": "^2.0.13",
     "axios": "^1.2.1",
+    "vform": "^2.1.2",
     "vue": "^3.2.45",
     "vue-currency-input": "^3.0.3",
-    "vue-final-modal": "^3.4.4"
+    "vue-final-modal": "^3.4.4",
+    "vue-select": "^4.0.0-beta.6",
+    "vue-uuid": "^3.0.0"
   },
   "devDependencies": {
     "@vitejs/plugin-vue": "^4.0.0",

@@ -1,297 +1,124 @@
 <script>
 import { reactive, ref, computed } from "@vue/reactivity";
 import Api from "./services/api";
-import { donation, donor } from "./data/resets";
-import DonationStep from "./steps/Donation.vue";
-import BasketStep from "./steps/Basket.vue";
-import DetailsStep from "./steps/Details.vue";
-import StripeComponent from "./components/Stripe.vue";
-import Paypal from "./components/Paypal.vue";
-import ThankyouStep from "./steps/Thankyou.vue";
+
 import ProgressStep from "./components/ProgressStep.vue";
 import Title from "./components/Title.vue";
-import Total from "./components/Total.vue";
-import Wrapper from "./Wrapper.vue";
+import LoginDetails from "./steps/LoginDetails.vue";
+import Verification from "./steps/Verification.vue";
+import CharityInformation from "./steps/CharityInformation.vue";
+import Finish from "./steps/Finish.vue";
+import Form from "./services/vform";
 
 export default {
   name: "DonorCloud",
   components: {
-    DonationStep,
-    BasketStep,
-    DetailsStep,
-    StripeComponent,
-    ThankyouStep,
     ProgressStep,
-    Paypal,
     Title,
-    Total,
-    Wrapper,
+    LoginDetails,
+    Verification,
+    CharityInformation,
+    Finish,
   },
   computed: {},
-  mounted() {
-    this.getData();
-  },
-  setup() {
-    const form = reactive({
-      donor: { ...donor },
-      donations: [],
-      paypal: {
-        purchase_id: null,
-      },
-      stripe: {
-        subscription_id: null,
-        payment_intent_id: null,
-      },
-    });
+  mounted() {},
+  setup(props) {
 
     const state = reactive({
       step: 1,
-      editIndex: null,
-      gatewayKeys: {
-        stripe: null,
-        paypal: null,
-      },
-      projects: [],
-      admin_fee: 0,
-      paymentType: null,
-      donation: { ...donation },
-      loading: false,
+      already_created: false,
+      verified: "",
     });
+    const login_form = reactive(
+      new Form({
+        name: "",
+        email: "",
+        password: "",
+        password_confirmation: "",
+        agreed: 0,
+      })
+    );
+    
+    const saveLogin = async () => {
+      const { data } = await login_form.post("save-login");
 
-    const getData = async () => {
-      const { data } = await Api.fetchData();
-      state.projects = data.projects;
-      state.gatewayKeys.stripe = data.stripe_gateway;
-      state.gatewayKeys.paypal = data.paypal_gateway;
-      state.admin_fee = data.admin_fee;
-      state.currency = data.currency;
-    };
-
-    const stepOneCompleted = () => {
-      if (state.editIndex == null) {
-        form.donations.push({ ...state.donation });
+      if (data.status == "COMPLETED") {
+        state.already_created = true;
+      } else if(state.verified == login_form.email){
+        state.step = 3;
       } else {
-        form.donations[state.editIndex] = { ...state.donation };
-      }
-      state.step = 2;
-    };
-    const stepTwoCompleted = () => {
-      state.step = 3;
-    };
-
-    const edit = (index) => {
-      state.editIndex = index;
-      state.donation = {
-        ...form.donations[index],
-      };
-      state.step = 1;
-    };
-
-    const add = () => {
-      state.editIndex = null;
-      state.donation = {
-        ...donation,
-      };
-      state.step = 1;
-    };
-
-    const handleStripeDonation = async (token) => {
-      const success = await handleStripePayment(token);
-      if (success) {
-        const response = await saveDonation();
-        state.step = 5;
-      }
-      state.loading = false;
-    };
-
-    const handleStripePayment = async (token) => {
-      const { title, first_name, last_name, email } = form.donor;
-      const payload = {
-        name: `${title} ${first_name} ${last_name}`,
-        email: email,
-        oneTimeDonation: getTotalAmount(computedProps.oneTimeDonations.value),
-        monthlyDonation: getTotalAmount(computedProps.monthlyDonations.value),
-        token: token,
-      };
-
-      try {
-        const { data } = await Api.stripePayment(payload);
-        if (data.secret) {
-          const stripe = computedProps.stripe.value;
-          const { paymentIntent, error: paymentIntentError } =
-            await stripe.confirmCardPayment(data.secret);
-        }
-
-        form.stripe = {
-          subscription_id: data.subscription_id ?? null,
-          payment_intent_id: data.payment_intent_id ?? null,
-        };
-
-        return true;
-      } catch (e) {
-        console.error(e);
-        return false;
+        state.step = 2;
       }
     };
 
-    const handlePaypalDonation = async (order) => {
-      if (order.status == "COMPLETED") {
-        form.paypal.purchase_id = order.id;
-        const response = await saveDonation();
-        state.loading = false;
-        state.step = 5;
+    const verification_form = reactive(
+      new Form({
+        code: "",
+        email: "",
+      })
+    );
+    const verify = async () => {
+      verification_form.email = login_form.email;
+      const { data } = await verification_form.post("verify");
+      if (data.status == "VERIFIED") {
+        state.verified = verification_form.email;
+        state.step = 3;
       }
     };
 
-    const paymentTypeStep = (model) => {
-      state.paymentType = model.value.payment_type;
-      state.step = 4;
-    };
-
-    const saveDonation = async () => {
-      const payload = {
-        donor: { ...form.donor },
-        oneTimeDonations: [...computedProps.oneTimeDonations.value],
-        monthlyDonations: [...computedProps.monthlyDonations.value],
-        paypal: { ...form.paypal },
-        stripe: { ...form.stripe },
-      };
-
-      const { data } = await Api.saveDonation(payload);
-      return data;
-    };
-
-    const handleClosed = () => {
-      if (state.step == 5) {
-        state.donation = { ...donation };
-        form.donor = { ...donor };
-        form.donations = [];
-        state.step = 1;
+    const charity_form = reactive(
+      new Form({
+        charity: "",
+        authorized: 0,
+        email: "",
+        portal_address: "",
+      })
+    );
+    const complete = async () => {
+      charity_form.email = login_form.email;
+      const { data } = await charity_form.post("save-charity");
+      if (data.status == "REGISTRATION_COMPLETED") {
+        state.step = 4;
       }
     };
-
-    const getTotalAmount = (donations) => {
-      return donations
-        .map((d) => d.fixed_amount ?? d.amount)
-        .reduce((partialSum, a) => partialSum + parseFloat(a), 0);
-    };
-
-    const computedProps = {
-      oneTimeDonations: computed(() => {
-        return form.donations.filter((d) => !d.monthly);
-      }),
-      monthlyDonations: computed(() => {
-        return form.donations.filter((d) => d.monthly);
-      }),
-      stripe: computed(() => {
-        if (state.gatewayKeys?.stripe) {
-          return Stripe(state.gatewayKeys.stripe);
-        }
-        return null;
-      }),
-    };
+    const computedProps = {};
 
     return {
       state,
-      form,
-      stepOneCompleted,
-      stepTwoCompleted,
-      edit,
-      add,
-      paymentTypeStep,
-      handleClosed,
-      handleStripeDonation,
-      handlePaypalDonation,
-      getData,
       ...computedProps,
+      login_form,
+      saveLogin,
+      verification_form,
+      verify,
+      charity_form,
+      complete
     };
   },
 };
 </script>
 <template>
-  <Wrapper @closed="handleClosed">
-    <div class="max-w-[900px] mx-auto px-4">
-      <Title />
-      <div class="flex items-center max-w-[700px] mx-auto my-4">
-        <progress-step
-          v-for="(s, i) in 3"
-          :key="i"
-          :step="s"
-          :current="state.step"
-        />
-      </div>
-      <div
-        class="max-w-[750px] mx-auto py-5 mb-10"
-        v-if="state.gatewayKeys.stripe || state.gatewayKeys.paypal"
-      >
-        <DonationStep
-          v-model="state.donation"
-          :donations="form.donations"
-          @view-basket="state.step = 2"
-          :projects="state.projects"
-          v-show="state.step == 1"
-          @forward="stepOneCompleted"
-        />
-        <BasketStep
-          v-model="form"
-          v-show="state.step == 2"
-          @forward="stepTwoCompleted"
-          @edit="edit"
-          @add-another="add"
-          :admin_fee="state.admin_fee"
-        />
-        <DetailsStep
-          v-model="form.donor"
-          v-show="state.step == 3"
-          :hasMonthly="monthlyDonations.length > 0"
-          :enable-paypal="!!state.gatewayKeys.paypal"
-          :enable-stripe="!!state.gatewayKeys.stripe"
-          @backward="state.step = 2"
-          @forward="paymentTypeStep"
-        />
-        <StripeComponent
-          v-if="state.gatewayKeys.stripe"
-          :customer="form.donor"
-          :stripe="stripe"
-          v-show="state.step == 4 && state.paymentType == 'credit'"
-          @backward="state.step = 3"
-          @forward="handleStripeDonation"
-          :loading="state.loading"
-          @start-loading="state.loading = true"
-          @error="state.loading = false"
-        />
-        <Paypal
-          :client-id="state.gatewayKeys.paypal"
-          :loading="state.loading"
-          :donations="oneTimeDonations"
-          :projects="state.projects"
-          v-if="
-            state.gatewayKeys.paypal &&
-            state.step == 4 &&
-            state.paymentType == 'paypal' &&
-            monthlyDonations.length == 0
-          "
-          @backward="state.step = 3"
-          @forward="handlePaypalDonation"
-          @start-loading="state.loading = true"
-          @error="state.loading = false"
-        />
-        <ThankyouStep v-if="state.step == 5" />
-
-        <Total v-if="state.step < 5" :donations="form.donations" />
-      </div>
-      <div class="max-w-[750px] mx-auto py-5 mb-10 flex items-center h-full" v-else>
-        <div
-          class="bg-red-100 border border-red-400 text-red-700 px-4 py-3 rounded relative"
-          role="alert"
-        >
-          <strong class="font-bold">Error: </strong>
-          <span class="block sm:inline">No payment gateway is enabled. Please enable a payment gateway from the panel.</span>
-
-        </div>
-      </div>
+  <main class="relative flex flex-col gap-5 overflow-auto no-scrollbar py-8">
+    <Title class="max-w-lg mx-auto" />
+    <div class="flex justify-center max-w-2xl w-full mx-auto mt-6">
+      <progress-step
+        v-for="(s, i) in 3"
+        :key="i"
+        :step="s"
+        :current="state.step"
+      />
     </div>
-  </Wrapper>
+    <div class="max-w-lg w-full mx-auto px-4 py-4">
+      <LoginDetails
+        v-if="state.step == 1"
+        v-model="login_form"
+        @submit.prevent="saveLogin"
+        :already-created="state.already_created"
+      />
+      <Verification v-model="verification_form" @submit.prevent="verify" v-if="state.step == 2" @back="state.step=1" />
+      <CharityInformation v-model="charity_form" @submit.prevent="complete" v-if="state.step == 3" @back="state.step=1" />
+      <Finish v-if="state.step == 4" />
+    </div>
+  </main>
 </template>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap");

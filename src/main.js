@@ -1,8 +1,10 @@
-import { createApp } from 'vue'
-import './style.css'
-import App from './App.vue'
-import "https://js.stripe.com/v3/";
-import "./setup.js"
+import { createApp } from "vue";
+import "./style.css";
+import App from "./App.vue";
+import "./setup.js";
+import VueSelect from "vue-select";
+import "vue-select/dist/vue-select.css";
 
-const app = createApp(App);
-app.mount('#synergi-donorcloud-app')
+const app = createApp(App)
+.component("v-select", VueSelect);
+app.mount("#synergi-donorcloud-app");
