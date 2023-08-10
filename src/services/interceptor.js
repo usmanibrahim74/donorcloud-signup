@@ -1,8 +1,8 @@
 import axios from "axios";
 
 let app_url = "https://app.donorcloud.co.uk";
-if (window.origin.includes("localhost")) {
-  app_url = "http://127.0.0.1:8000";
+if (["localhost",'127.0.0.1'].some(origin => window.origin.includes(origin))) {
+  app_url = "http://donorcloud.local";
 }
 
 const instance = axios.create({

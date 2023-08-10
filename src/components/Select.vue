@@ -120,7 +120,7 @@ export default {
 >>> {
   --vs-controls-color: rgb(209, 213, 219);
   --vs-border-color: rgb(209, 213, 219);
-  --vs-border-width: 3px;
+  --vs-border-width: 1px;
   --vs-border-radius: 6px;
 
   --vs-actions-padding: 6px 14px 0 0;

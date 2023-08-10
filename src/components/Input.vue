@@ -7,17 +7,17 @@
       <input
         :type="type"
         v-model="model"
-        class="flex flex-auto p-3.5 text-sm border-[3px] outline-none placeholder:text-gray-300 font-semibold"
+        class="flex flex-auto p-3.5 text-sm border outline-none placeholder:text-gray-300 font-semibold"
         :class="[
           hasError ? 'bg-red-50 border-red-300' : 'bg-white border-gray-300',
-          isGroup ? 'rounded-l-md border-r-0' : 'w-full rounded-l',
+          isGroup ? 'rounded-l border-r-0' : 'w-full rounded-l',
         ]"
         :id="uid"
         :required="required"
         :placeholder="placeholder"
       />
       <span v-if="isGroup"
-        class="flex items-center border-[3px] whitespace-nowrap rounded-r border-l-0 border-solid px-3 py-[0.25rem] text-center text-base font-bold leading-[1.6] text-neutral-700 dark:border-neutral-600 dark:text-neutral-200 dark:placeholder:text-neutral-200"
+        class="flex items-center border whitespace-nowrap rounded-r border-l-0 border-solid px-3 py-[0.25rem] text-center text-base font-bold leading-[1.6] text-neutral-700  dark:text-neutral-200 dark:placeholder:text-neutral-200"
         :class="[
           hasError ? 'bg-red-50 border-red-300' : 'bg-white border-gray-300',
           ]"

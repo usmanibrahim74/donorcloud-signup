@@ -7,4 +7,4 @@ import "vue-select/dist/vue-select.css";
 
 const app = createApp(App)
 .component("v-select", VueSelect);
-app.mount("#synergi-donorcloud-app");
+app.mount("#synergi-donorcloud-signup-app");
