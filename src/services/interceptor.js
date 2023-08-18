@@ -1,6 +1,6 @@
 import axios from "axios";
 
-let app_url = "https://app.donorcloud.co.uk";
+let app_url = "https://www.app.donorcloud.co.uk";
 if (["localhost",'127.0.0.1'].some(origin => window.origin.includes(origin))) {
   app_url = "http://donorcloud.local";
 }
