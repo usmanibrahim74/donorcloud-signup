@@ -1,6 +1,6 @@
 <template lang="">
   <button
-    class="text-white font-bold rounded text-base py-3.5 px-3 md:px-6 no-underline border-none"
+    class="text-xs rounded py-3 px-6 block no-underline font-bold uppercase text-white !border-none"
     :type="type"
   >
     <slot>

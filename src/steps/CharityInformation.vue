@@ -1,7 +1,7 @@
 <template lang="">
   <form class="flex flex-col gap-3">
     <h4
-      class="font-sans letter tracking-wide uppercase text-xl mb-2 text-gray-500"
+      class="font-sans letter tracking-wide uppercase text-lg md:text-xl mb-2 text-gray-500"
     >
       Step 3: Charity Information
     </h4>
@@ -19,14 +19,14 @@
     />
 
     <div class="mb-4" v-if="model.charity">
-      <p class="text-lg font-medium mb-1">Selected charity:</p>
-      <p class="text-gray-600 uppercase font-thin tracking-wide">
-        {{ model.charity.charity_name }}
+      <label class="text-sm text-black font-medium">Selected charity:</label>
+      <p class="font-bold text-gray-600 text-sm uppercase tracking-wide">
+        {{ model.charity.charity_name }} <em>({{ model.charity.reg_charity_number }})</em>
       </p>
     </div>
 
-    <div>
-      <Input
+    <div class="w-full">
+      <GroupInput
         class="col-span-1"
         v-model="model.portal_address"
         :errors="errors"
@@ -37,7 +37,7 @@
         is-group
       >
         <template #right-group> .donorcloud.co.uk </template>
-      </Input>
+      </GroupInput>
     </div>
     <Checkbox
       :errors="errors"
@@ -49,7 +49,7 @@
       :true-value="1"
       :false-value="0"
     >
-      I confirm that I'm authorized to create an account for this charity.
+      I confirm that I'm authorised to create an account for this charity.
     </Checkbox>
     <Button
       :disabled="!model.authorized || model.busy"
@@ -77,6 +77,7 @@
 <script>
 import { ref, computed } from "@vue/reactivity";
 import Input from "../components/Input.vue";
+import GroupInput from "../components/GroupInput.vue";
 import Select from "../components/Select.vue";
 import Button from "../components/Button.vue";
 import Checkbox from "../components/Checkbox.vue";
@@ -85,6 +86,7 @@ import axios from "./../services/interceptor";
 export default {
   components: {
     Input,
+    GroupInput,
     Select,
     Button,
     Checkbox,

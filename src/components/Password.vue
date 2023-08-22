@@ -7,8 +7,6 @@
       <input
         :type="type"
         v-model="model"
-        @focus="focused"
-        @blur="focused"
         class="flex flex-auto rounded border px-4 py-2 text-sm outline-none"
         :class="[
           hasError ? 'bg-red-300 border-red-400' : 'bg-white border-gray-300 focus:border-gray-500',
@@ -32,12 +30,14 @@
 </template>
 <script>
 import HasError from "./HasError.vue";
-import { computed, reactive, ref } from "@vue/reactivity";
+import { computed } from "@vue/reactivity";
 import { uuid } from "vue-uuid";
+// import Password from 'vue-password-strength-meter'
 
 export default {
   components: {
     HasError,
+    // Password
   },
   props: {
     modelValue: {
@@ -86,18 +86,12 @@ export default {
       get: () => props.errors?.get(props.field),
     });
     const uid = uuid.v4();
-    const is_focused = ref(false)
-    const focused = () => {
-      is_focused.value = !is_focused.value
-    }
     return {
       model,
       message,
       uid,
       hasLabel,
       hasError,
-      focused,
-      is_focused
     };
   },
 };

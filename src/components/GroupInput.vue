@@ -3,16 +3,15 @@
     <label v-if="hasLabel" class="text-sm text-black font-medium" :for="uid">{{
       label
     }}</label>
-    <div :class="[isGroup ? 'relative mb-4 flex flex-wrap items-stretch focus-within:border-black' : '']">
+    <div class="max-w-full w-full relative mb-4 flex items-stretch focus-within:border-black">
       <input
         :type="type"
         v-model="model"
         @focus="focused"
         @blur="focused"
-        class="flex flex-auto rounded border px-4 py-2 text-sm outline-none"
+        class="w-full rounded border px-4 py-2 text-sm outline-none rounded-l rounded-r-none border-r-0"
         :class="[
           hasError ? 'bg-red-300 border-red-400' : 'bg-white border-gray-300 focus:border-gray-500',
-          isGroup ? 'rounded-l rounded-r-none border-r-0' : 'w-full rounded-l',
         ]"
         :id="uid"
         :required="required"
@@ -32,7 +31,7 @@
 </template>
 <script>
 import HasError from "./HasError.vue";
-import { computed, reactive, ref } from "@vue/reactivity";
+import { computed, ref } from "@vue/reactivity";
 import { uuid } from "vue-uuid";
 
 export default {

@@ -9,7 +9,7 @@
     <p class="text-gray-500">
       Thanks for creating an account with us! Our team is setting up your portal
       and it should be ready in the next
-      <span class="font-bold text-secondary">30 minutes</span> or so
+      <span class="font-bold text-secondary">30 minutes</span> or so.
     </p>
     <p class="text-gray-900 font-bold mt-6 mb-8">
       Please wait for our email with your charity login information.

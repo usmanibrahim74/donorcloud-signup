@@ -7,8 +7,7 @@
     </h4>
 
     <p class="text-gray-500">
-      A one time code has been send to the email you provided, Please enter it
-      below to continue
+      A one time code has been sent to the email you provided. Please enter it below to continue.
     </p>
     <Input
       v-model="model.code"
@@ -25,12 +24,12 @@
     >
       <template v-if="!model.busy">
         <span>Next Step</span>
-        <IconArrowRight class="w-5 h-5 mt-0.5" />
+        <IconArrowRight class="w-4 h-4" />
       </template>
       <span v-else>Verifying...</span>
     </Button>
     <Button class="bg-gray-800 flex items-center gap-3 justify-center" @click="$emit('back')">
-      <IconArrowRight class="w-5 h-5 mt-0.5 rotate-180" />
+      <IconArrowRight class="w-4 h-4 rotate-180" />
       <span>Go Back</span>
     </Button>
   </form>

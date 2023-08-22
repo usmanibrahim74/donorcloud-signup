@@ -97,28 +97,30 @@ export default {
 };
 </script>
 <template>
-  <main class="relative flex flex-col gap-5 overflow-auto no-scrollbar py-8">
-    <Title class="max-w-lg mx-auto" />
-    <div class="flex justify-center max-w-2xl w-full mx-auto mt-6">
-      <progress-step
-        v-for="(s, i) in 3"
-        :key="i"
-        :step="s"
-        :current="state.step"
-      />
-    </div>
-    <div class="max-w-lg w-full mx-auto px-4 py-4">
-      <LoginDetails
-        v-if="state.step == 1"
-        v-model="login_form"
-        @submit.prevent="saveLogin"
-        :already-created="state.already_created"
-      />
-      <Verification v-model="verification_form" @submit.prevent="verify" v-if="state.step == 2" @back="state.step=1" />
-      <CharityInformation v-model="charity_form" @submit.prevent="complete" v-if="state.step == 3" @back="state.step=1" />
-      <Finish v-if="state.step == 4" />
-    </div>
-  </main>
+  <div id="donorcloud-signup">
+    <main class="relative flex flex-col gap-5 overflow-auto no-scrollbar py-8">
+      <Title class="max-w-lg mx-auto" />
+      <div class="flex justify-center max-w-2xl w-full mx-auto mt-6">
+        <progress-step
+          v-for="(s, i) in 3"
+          :key="i"
+          :step="s"
+          :current="state.step"
+        />
+      </div>
+      <div class="max-w-lg w-full mx-auto px-4 py-4">
+        <LoginDetails
+          v-if="state.step == 1"
+          v-model="login_form"
+          @submit.prevent="saveLogin"
+          :already-created="state.already_created"
+        />
+        <Verification v-model="verification_form" @submit.prevent="verify" v-if="state.step == 2" @back="state.step=1" />
+        <CharityInformation v-model="charity_form" @submit.prevent="complete" v-if="state.step == 3" @back="state.step=1" />
+        <Finish v-if="state.step == 4" />
+      </div>
+    </main>
+  </div>
 </template>
 <style>
 @import url("https://fonts.googleapis.com/css2?family=Red+Hat+Display:wght@300;400;500;600;700;800;900&display=swap");

@@ -9,9 +9,20 @@
       label="charity_name"
       :placeholder="placeholder"
       v-model="model"
+      class="h-[42px]"
       :class="[hasError ? 'hasError' : '']"
-    ></v-select>
-    <HasError class="ml-5 mt-1" v-if="hasError" :message="message" />
+    >
+    <template #selected-option="{ charity_name, reg_charity_number }">
+      {{ reg_charity_number  }}
+    </template>
+    <template #option="{ charity_name, reg_charity_number }">
+      <div style="display: flex; align-items: baseline">
+        <strong class="text-xs">{{ charity_name }}</strong>
+        <em style="margin-left: 0.5rem">({{ reg_charity_number  }})</em>
+      </div>
+    </template>
+    </v-select>
+    <HasError class="mt-1" v-if="hasError" :message="message" />
   </div>
 </template>
 <script>
@@ -117,15 +128,15 @@ export default {
 .hasError {
   --vs-border-color: rgb(248 113 113);
 }
->>> {
+:deep() {
   --vs-controls-color: rgb(209, 213, 219);
   --vs-border-color: rgb(209, 213, 219);
   --vs-border-width: 1px;
-  --vs-border-radius: 6px;
+  --vs-border-radius: 4px;
 
   --vs-actions-padding: 6px 14px 0 0;
-  --vs-line-height: 40px;
-  --vs-font-size: 16px;
+  --vs-line-height: 25px;
+  --vs-font-size: 14px;
   --vs-search-input-placeholder-color: rgb(209, 213, 219);
   /* --vs-search-input-color: rgb(209, 213, 219); */
 
@@ -147,9 +158,19 @@ export default {
 .vs__search,
 .vs__search:focus {
   padding-left: 10px !important;
+  border: 1px solid rgb(209, 213, 219) !important;
+  border-radius: 4px !important;
 }
 .vs__search::placeholder {
   font-weight: 600;
+}
+.vs__selected{
+  font-size: 14px;
+}
+@media only screen and (max-width: 600px) {
+  .vs__selected{
+    font-size: 12px;
+  }
 }
 
 .hasError .vs__dropdown-toggle {

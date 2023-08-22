@@ -3,8 +3,8 @@
 /** @type {import('tailwindcss').Config} */
 module.exports = {
   presets: [require("./preset.js")],
-  // important: "#synergy-donation-tailwind",
-  important: true,
+  important: "#donorcloud-signup",
+  // important: true,
   // prefix: 'tw-',
   content: ["./index.html", "./src/**/*.{vue,js,ts,jsx,tsx}"],
   theme: {

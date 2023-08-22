@@ -23,7 +23,7 @@
       placeholder="Email"
       label="Enter an email address"
     />
-    <Input
+    <Password
       v-model="model.password"
       :errors="errors"
       field="password"
@@ -32,7 +32,9 @@
       placeholder="Password"
       label="Enter a password"
     />
-    <Input
+    <password-meter v-if="model.password" :password="model.password" />
+    
+    <Password
       v-model="model.password_confirmation"
       :errors="errors"
       field="password_confirmation"
@@ -41,6 +43,7 @@
       placeholder="Confirm Password"
       label="Confirm your password"
     />
+    <password-meter v-if="model.password_confirmation" :password="model.password_confirmation" />
 
     <Checkbox
       :errors="errors"
@@ -52,9 +55,9 @@
       :true-value="1"
       :false-value="0"
     >
-      Please Confirm you agree to our
-      <a href="/terms_of_user" class="text-secondary font-medium">terms of use</a>, and
-      <a href="/privacy_policy" class="text-secondary font-medium">privacy policy</a> by
+      Please confirm you agree to our
+      <a target="__blank" href="https://www.donorcloud.co.uk/terms-of-use" class="text-secondary font-medium">terms of use</a>, and
+      <a target="__blank" href="https://www.donorcloud.co.uk/privacy-policy" class="text-secondary font-medium">privacy policy</a> by
       ticking the box.
     </Checkbox>
     <Button
@@ -79,15 +82,19 @@
 <script>
 import { ref, computed } from "@vue/reactivity";
 import Input from "../components/Input.vue";
+import Password from "../components/Password.vue";
 import Button from "../components/Button.vue";
 import Checkbox from "../components/Checkbox.vue";
 import IconArrowRight from "../components/icons/IconArrowRight.vue";
+import PasswordMeter from 'vue-simple-password-meter';
 export default {
   components: {
     Input,
     Button,
     Checkbox,
     IconArrowRight,
+    Password,
+    PasswordMeter
   },
   props: {
     modelValue: {
